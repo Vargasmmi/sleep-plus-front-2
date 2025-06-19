@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+    volumes:
+      - backend-data:/app/data
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://backend:3001}
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  backend-data:
+
+networks:
+  app-network:
+    driver: bridge
