@@ -73,8 +73,8 @@ COPY db.json ./
 COPY routes.json ./
 COPY start.sh ./
 
-# Copiar archivos de configuración si existen
-COPY .env.production .env
+# Crear archivo .env con valores por defecto
+RUN echo 'NODE_ENV=production\nPORT=80\nHOST=0.0.0.0' > .env
 
 # Copiar build del frontend
 COPY --from=frontend-builder /app/dist ./dist
