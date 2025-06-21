@@ -10,10 +10,11 @@ Sistema de seguimiento de sueño con frontend React y backend JSON Server.
 - **Puerto:** 3000
 
 ### Backend
-- **URL directa:** http://168.231.92.67:3001
+- **URL con dominio temporal:** https://sleep-plus-front-2-backend.dqyvuv.easypanel.host
+- **URL directa (alternativa):** http://168.231.92.67:3001
 - **Estado:** ✅ Desplegado y funcionando
 - **Puerto:** 3001
-- **Nota:** El backend no tiene dominio temporal de EasyPanel, usar la URL con puerto directo
+- **Dominio:** ✅ Configurado y funcionando
 
 ## 📁 Estructura del Proyecto
 
@@ -49,7 +50,7 @@ sleep-plus-front-2/
 
 ## 📡 API Endpoints
 
-Base URL: `http://168.231.92.67:3001`
+Base URL: `https://sleep-plus-front-2-backend.dqyvuv.easypanel.host`
 
 - `GET /health` - Estado del servidor
 - `GET /api` - Información de la API
@@ -62,13 +63,13 @@ Base URL: `http://168.231.92.67:3001`
 
 ```bash
 # Health check
-curl http://168.231.92.67:3001/health
+curl https://sleep-plus-front-2-backend.dqyvuv.easypanel.host/health
 
 # Obtener usuarios
-curl http://168.231.92.67:3001/api/users
+curl https://sleep-plus-front-2-backend.dqyvuv.easypanel.host/api/users
 
 # Crear registro de sueño
-curl -X POST http://168.231.92.67:3001/api/sleep-records \
+curl -X POST https://sleep-plus-front-2-backend.dqyvuv.easypanel.host/api/sleep-records \
   -H "Content-Type: application/json" \
   -d '{
     "userId": 1,
@@ -120,21 +121,11 @@ curl -X POST http://168.231.92.67:3000/api/trpc/services.app.deployService \
 
 ## 📝 Notas Importantes
 
-1. El backend no tiene dominio temporal asignado en EasyPanel
-2. Usar la URL con puerto directo: `http://168.231.92.67:3001`
+1. El backend tiene dominio temporal asignado: `https://sleep-plus-front-2-backend.dqyvuv.easypanel.host`
+2. También accesible por puerto directo: `http://168.231.92.67:3001`
 3. El frontend está configurado para conectarse al backend correctamente
 4. Los datos se almacenan en `backend/db.json` (no persistente entre reinicios)
 
-## 🔧 Configuración Manual del Dominio (EasyPanel)
-
-Si necesitas asignar un dominio al backend:
-
-1. Accede a EasyPanel: http://168.231.92.67:3000
-2. Ve a: Proyectos → sleep-plus-front-2 → backend
-3. En "Domains", configura:
-   - Host: sleep-plus-front-2-backend.dqyvuv.easypanel.host
-   - Port: 3001
-   - HTTPS: Habilitado
 
 ## 📈 Próximos Pasos
 
