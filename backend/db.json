@@ -45,6 +45,16 @@
       "duration": 7.5,
       "quality": 3,
       "notes": "Me desperté varias veces"
+    },
+    {
+      "userId": 1,
+      "date": "2024-03-22",
+      "bedTime": "22:45",
+      "wakeTime": "06:45",
+      "duration": 8,
+      "quality": 5,
+      "notes": "Dormí las 8 horas recomendadas",
+      "id": 4
     }
   ],
   "sleep-goals": [
