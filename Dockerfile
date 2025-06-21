@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --only=production
 
 # Copy source code
 COPY . .
@@ -19,7 +19,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install serve globally
+# Install serve
 RUN npm install -g serve
 
 # Copy built application from builder stage
@@ -28,5 +28,9 @@ COPY --from=builder /app/dist ./dist
 # Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); })"
+
+# Start the application with proper configuration
+CMD ["serve", "-s", "dist", "-l", "3000", "--no-clipboard"]
