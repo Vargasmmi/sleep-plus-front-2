@@ -28,5 +28,5 @@ COPY --from=builder /app/dist ./dist
 # Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["serve", "-s", "dist", "-l", "3000", "--no-clipboard"]
+# Start the application - Escuchar en todas las interfaces (0.0.0.0)
+CMD ["serve", "-s", "dist", "-l", "tcp://0.0.0.0:3000", "--no-clipboard"]
