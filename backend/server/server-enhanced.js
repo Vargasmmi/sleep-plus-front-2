@@ -25,6 +25,20 @@ server.use((req, res, next) => {
 // Usar middlewares por defecto de JSON Server
 server.use(middlewares);
 
+// Servir archivos estáticos
+const fs = require('fs');
+server.use(express.static(path.join(__dirname, '..', 'public')));
+
+// API Documentation endpoint
+server.get('/api-docs', (req, res) => {
+  const apiDocsPath = path.join(__dirname, 'api-documentation.html');
+  if (fs.existsSync(apiDocsPath)) {
+    res.sendFile(apiDocsPath);
+  } else {
+    res.status(404).send('API Documentation not found');
+  }
+});
+
 // Middleware para parsear JSON
 server.use(express.json());
 
@@ -490,6 +504,7 @@ server.use(router);
 const PORT = config.port;
 server.listen(PORT, config.host, () => {
   console.log(`🚀 Sleep Plus Admin API running on http://${config.host}:${PORT}`);
+  console.log(`📚 API Documentation: http://${config.host}:${PORT}/api-docs`);
   console.log(`📊 Environment: ${config.environment}`);
   console.log(`🌐 CORS Origins: ${JSON.stringify(config.cors.origin)}`);
   console.log(`📝 Database: ${path.join(__dirname, '..', 'db.json')}`);
