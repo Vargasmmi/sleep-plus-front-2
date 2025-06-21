@@ -1,0 +1,219 @@
+{
+  "customers": [
+    {
+      "id": "cust_2",
+      "phone": "+1234567891",
+      "email": "jane.smith@example.com",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "address": {
+        "street": "789 Oak Ave",
+        "city": "San Francisco",
+        "state": "CA",
+        "zipCode": "94102"
+      },
+      "tier": "silver",
+      "source": "store",
+      "tags": ["frequent-buyer"],
+      "lifetimeValue": 1500,
+      "firstPurchaseDate": "2023-06-01T00:00:00.000Z",
+      "lastPurchaseDate": "2024-11-15T00:00:00.000Z",
+      "lastContactDate": "2024-12-01T00:00:00.000Z",
+      "purchasedItems": ["Sleep Tracker Basic"],
+      "isEliteMember": false,
+      "membershipStatus": "active",
+      "totalTrades": 1,
+      "totalCreditEarned": 100,
+      "currentCredit": 100,
+      "doNotCall": false,
+      "notes": "Interested in upgrading to premium",
+      "createdAt": "2023-06-01T00:00:00.000Z",
+      "updatedAt": "2024-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "cust_3",
+      "phone": "+1234567892",
+      "email": "robert.johnson@example.com",
+      "firstName": "Robert",
+      "lastName": "Johnson",
+      "address": {
+        "street": "321 Pine St",
+        "city": "San Diego",
+        "state": "CA",
+        "zipCode": "92101"
+      },
+      "tier": "bronze",
+      "source": "phone",
+      "tags": ["new-customer"],
+      "lifetimeValue": 500,
+      "firstPurchaseDate": "2024-10-01T00:00:00.000Z",
+      "lastPurchaseDate": "2024-10-01T00:00:00.000Z",
+      "lastContactDate": "2024-12-10T00:00:00.000Z",
+      "purchasedItems": ["Sleep App Subscription"],
+      "isEliteMember": false,
+      "membershipStatus": "active",
+      "totalTrades": 0,
+      "totalCreditEarned": 0,
+      "currentCredit": 0,
+      "doNotCall": false,
+      "notes": "",
+      "createdAt": "2024-10-01T00:00:00.000Z",
+      "updatedAt": "2024-12-10T00:00:00.000Z"
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp_2",
+      "employeeId": "E002",
+      "email": "agent2@sleepplus.com",
+      "firstName": "Michael",
+      "lastName": "Chen",
+      "role": "agent",
+      "storeId": "store_1",
+      "phoneExtension": "102",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
+      "status": "active",
+      "shift": "afternoon",
+      "hiredAt": "2023-09-01T00:00:00.000Z",
+      "commissions": {
+        "totalEvaluations": 100,
+        "totalCommissionEarned": 3000,
+        "currentMonthEvaluations": 12,
+        "currentMonthCommission": 360
+      },
+      "performance": {
+        "callsToday": 20,
+        "callsTarget": 30,
+        "conversionsToday": 3,
+        "conversionRate": 0.15,
+        "averageCallDuration": 210
+      },
+      "createdAt": "2023-09-01T00:00:00.000Z",
+      "updatedAt": "2024-12-20T00:00:00.000Z"
+    },
+    {
+      "id": "emp_manager_1",
+      "employeeId": "M001",
+      "email": "manager@sleepplus.com",
+      "firstName": "Lisa",
+      "lastName": "Anderson",
+      "role": "manager",
+      "storeId": "store_1",
+      "phoneExtension": "100",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa",
+      "status": "active",
+      "shift": "full",
+      "hiredAt": "2022-01-01T00:00:00.000Z",
+      "commissions": {
+        "totalEvaluations": 0,
+        "totalCommissionEarned": 0,
+        "currentMonthEvaluations": 0,
+        "currentMonthCommission": 0
+      },
+      "performance": {
+        "callsToday": 0,
+        "callsTarget": 0,
+        "conversionsToday": 0,
+        "conversionRate": 0,
+        "averageCallDuration": 0
+      },
+      "createdAt": "2022-01-01T00:00:00.000Z",
+      "updatedAt": "2024-12-20T00:00:00.000Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod_1",
+      "name": "Sleep Tracker Pro",
+      "description": "Advanced sleep tracking device with AI-powered insights",
+      "price": 199.99,
+      "category": "device",
+      "features": [
+        "Heart rate monitoring",
+        "Sleep stage tracking",
+        "Smart alarm",
+        "Mobile app integration"
+      ],
+      "stock": 150,
+      "status": "active",
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "prod_2",
+      "name": "Sleep Plus Premium Subscription",
+      "description": "Full access to all premium features and personalized coaching",
+      "price": 29.99,
+      "category": "subscription",
+      "features": [
+        "Personalized sleep coaching",
+        "Advanced analytics",
+        "Priority support",
+        "Family sharing"
+      ],
+      "billingFrequency": "monthly",
+      "status": "active",
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "calls": [
+    {
+      "id": "call_1",
+      "customerId": "cust_2",
+      "userId": "emp_1",
+      "type": "outbound",
+      "status": "completed",
+      "disposition": "interested",
+      "duration": 240,
+      "startTime": "2024-12-20T14:30:00.000Z",
+      "endTime": "2024-12-20T14:34:00.000Z",
+      "notes": "Customer interested in premium features, scheduled follow-up",
+      "script": {
+        "id": "script_1",
+        "name": "Standard Cold Call",
+        "version": "1.0"
+      },
+      "objections": ["price_concern"],
+      "nextAction": {
+        "type": "callback",
+        "scheduledFor": "2024-12-22T14:30:00.000Z",
+        "notes": "Discuss premium plan benefits and current promotion"
+      },
+      "metadata": {
+        "campaignId": "camp_1"
+      },
+      "createdAt": "2024-12-20T14:34:00.000Z"
+    }
+  ],
+  "sales": [
+    {
+      "id": "sale_1",
+      "subscriptionId": "sub_1",
+      "customerId": "cust_1",
+      "userId": "emp_1",
+      "storeId": "store_1",
+      "type": "new",
+      "channel": "phone",
+      "amount": {
+        "gross": 299.99,
+        "discount": 90.00,
+        "net": 209.99,
+        "tax": 18.90,
+        "total": 228.89
+      },
+      "commission": {
+        "base": 20.99,
+        "bonus": 5.00,
+        "total": 25.99,
+        "status": "paid"
+      },
+      "contract": {
+        "signed": true,
+        "signedAt": "2024-01-15T10:30:00.000Z"
+      },
+      "paymentStatus": "completed",
+      "callId": "call_old_1",
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    }
+  ]
+}
