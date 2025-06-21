@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Plus API Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .subtitle { opacity: 0.9; font-size: 1.1rem; }
+        .stats { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card h3 { color: #2a5298; font-size: 2rem; }
+        .stat-card p { color: #666; }
+        .endpoint-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .endpoint-section h2 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #2a5298;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .endpoint:hover { background: #e9ecef; transform: translateX(5px); }
+        .endpoint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            color: white;
+        }
+        .method.GET { background: #28a745; }
+        .method.POST { background: #007bff; }
+        .method.PUT { background: #ffc107; color: #333; }
+        .method.DELETE { background: #dc3545; }
+        .url { font-family: monospace; color: #495057; }
+        .test-area {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        .test-area.active { display: block; }
+        button {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        button:hover { background: #1e3c72; }
+        .response {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status { margin-top: 0.5rem; font-weight: bold; }
+        .status.success { color: #28a745; }
+        .status.error { color: #dc3545; }
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-top: 0.5rem;
+        }
+        .icon { font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌙 Sleep Plus API Documentation</h1>
+            <p class="subtitle">Interactive API Explorer & Testing Tool</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>18</h3>
+                <p>Total Endpoints</p>
+            </div>
+            <div class="stat-card">
+                <h3>6</h3>
+                <p>API Categories</p>
+            </div>
+            <div class="stat-card">
+                <h3>v1.0</h3>
+                <p>API Version</p>
+            </div>
+            <div class="stat-card">
+                <h3>REST</h3>
+                <p>API Type</p>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2><span class="icon">🏥</span> Health & Debug</h2>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/health</span>
+                    </div>
+                    <span>Basic health check</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/health', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api-docs</span>
+                    </div>
+                    <span>This documentation page</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2><span class="icon">🛍️</span> Shopify Integration</h2>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method POST">POST</span>
+                        <span class="url">/api/shopify/orders</span>
+                    </div>
+                    <span>Create Shopify order</span>
+                </div>
+                <div class="test-area">
+                    <textarea placeholder='{"customerId": "123", "items": [], "total": 99.99}' rows="4"></textarea>
+                    <button onclick="testEndpoint('POST', '/api/shopify/orders', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method POST">POST</span>
+                        <span class="url">/api/shopify/customers</span>
+                    </div>
+                    <span>Create Shopify customer</span>
+                </div>
+                <div class="test-area">
+                    <textarea placeholder='{"email": "test@example.com", "firstName": "John", "lastName": "Doe"}' rows="4"></textarea>
+                    <button onclick="testEndpoint('POST', '/api/shopify/customers', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method POST">POST</span>
+                        <span class="url">/api/shopify/products</span>
+                    </div>
+                    <span>Create Shopify product</span>
+                </div>
+                <div class="test-area">
+                    <textarea placeholder='{"title": "Sleep Plus Device", "price": 299.99, "description": "Advanced sleep tracking device"}' rows="4"></textarea>
+                    <button onclick="testEndpoint('POST', '/api/shopify/products', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2><span class="icon">💳</span> Stripe Integration</h2>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/stripe/customers</span>
+                    </div>
+                    <span>List Stripe customers</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/stripe/customers', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method POST">POST</span>
+                        <span class="url">/api/stripe/subscriptions</span>
+                    </div>
+                    <span>Create Stripe subscription</span>
+                </div>
+                <div class="test-area">
+                    <textarea placeholder='{"customerId": "cus_123", "priceId": "price_123"}' rows="4"></textarea>
+                    <button onclick="testEndpoint('POST', '/api/stripe/subscriptions', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/stripe/payments</span>
+                    </div>
+                    <span>List recent payments</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/stripe/payments', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2><span class="icon">📊</span> Subscriptions Management</h2>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/subscriptions</span>
+                    </div>
+                    <span>List all subscriptions</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/subscriptions', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2><span class="icon">💾</span> JSON Server Database</h2>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/users</span>
+                    </div>
+                    <span>List all users</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/users', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/sleep-records</span>
+                    </div>
+                    <span>List sleep records</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/sleep-records', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/customers</span>
+                    </div>
+                    <span>List all customers</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/customers', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/employees</span>
+                    </div>
+                    <span>List all employees</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/employees', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2><span class="icon">🔔</span> Webhooks</h2>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method POST">POST</span>
+                        <span class="url">/api/webhooks/stripe</span>
+                    </div>
+                    <span>Stripe webhook handler</span>
+                </div>
+                <div class="test-area">
+                    <textarea placeholder='{"type": "payment_intent.succeeded", "data": {...}}' rows="4"></textarea>
+                    <button onclick="testEndpoint('POST', '/api/webhooks/stripe', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method POST">POST</span>
+                        <span class="url">/api/webhooks/shopify</span>
+                    </div>
+                    <span>Shopify webhook handler</span>
+                </div>
+                <div class="test-area">
+                    <textarea placeholder='{"topic": "orders/create", "data": {...}}' rows="4"></textarea>
+                    <button onclick="testEndpoint('POST', '/api/webhooks/shopify', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2><span class="icon">📈</span> Statistics & Reporting</h2>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/stats/overview</span>
+                    </div>
+                    <span>General statistics overview</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/stats/overview', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/stats/revenue</span>
+                    </div>
+                    <span>Revenue statistics</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/stats/revenue', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+            <div class="endpoint" onclick="toggleTest(this)">
+                <div class="endpoint-header">
+                    <div>
+                        <span class="method GET">GET</span>
+                        <span class="url">/api/stats/sleep-analysis</span>
+                    </div>
+                    <span>Sleep data analysis</span>
+                </div>
+                <div class="test-area">
+                    <button onclick="testEndpoint('GET', '/api/stats/sleep-analysis', this)">Test Endpoint</button>
+                    <div class="response"></div>
+                    <div class="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        function toggleTest(element) {
+            const testArea = element.querySelector('.test-area');
+            if (testArea) {
+                testArea.classList.toggle('active');
+            }
+        }
+
+        async function testEndpoint(method, url, button) {
+            const container = button.parentElement;
+            const responseDiv = container.querySelector('.response');
+            const statusDiv = container.querySelector('.status');
+            const textarea = container.querySelector('textarea');
+            
+            responseDiv.textContent = 'Loading...';
+            statusDiv.textContent = '';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (method !== 'GET' && textarea && textarea.value) {
+                    try {
+                        options.body = JSON.stringify(JSON.parse(textarea.value));
+                    } catch (e) {
+                        responseDiv.textContent = 'Invalid JSON in request body';
+                        statusDiv.textContent = 'Error: Invalid JSON';
+                        statusDiv.className = 'status error';
+                        return;
+                    }
+                }
+                
+                const startTime = Date.now();
+                const response = await fetch(API_BASE + url, options);
+                const duration = Date.now() - startTime;
+                
+                const contentType = response.headers.get('content-type');
+                let data;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                    responseDiv.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    data = await response.text();
+                    responseDiv.textContent = data;
+                }
+                
+                statusDiv.textContent = `Status: ${response.status} ${response.statusText} | Time: ${duration}ms`;
+                statusDiv.className = response.ok ? 'status success' : 'status error';
+                
+            } catch (error) {
+                responseDiv.textContent = error.message;
+                statusDiv.textContent = 'Error: Request failed';
+                statusDiv.className = 'status error';
+            }
+        }
+
+        // Prevent event bubbling when clicking on test area
+        document.querySelectorAll('.test-area').forEach(area => {
+            area.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>

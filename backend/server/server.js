@@ -71,6 +71,16 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API Documentation endpoint
+app.get('/api-docs', (req, res) => {
+  const docPath = path.join(__dirname, 'api-documentation.html');
+  if (fs.existsSync(docPath)) {
+    res.sendFile(docPath);
+  } else {
+    res.status(404).json({ error: 'API documentation not found' });
+  }
+});
+
 // Test page para verificar frontend
 app.get('/test-frontend', (req, res) => {
   const testHtml = `
@@ -1490,6 +1500,7 @@ app.listen(PORT, HOST, () => {
   console.log('📋 Available endpoints:');
   console.log('  Debug:');
   console.log(`    GET  ${PUBLIC_URL}/health`);
+  console.log(`    GET  ${PUBLIC_URL}/api-docs`);
   console.log(`    GET  ${PUBLIC_URL}/api/debug/files`);
   console.log('');
   console.log('  Shopify Proxy:');
