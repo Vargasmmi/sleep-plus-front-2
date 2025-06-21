@@ -129,8 +129,11 @@ curl -X POST http://168.231.92.67:3000/api/trpc/services.app.deployService \
 
 ## 📈 Próximos Pasos
 
+**Actualizado: Enero 2025**
+
 1. Migrar a una base de datos persistente
 2. Implementar autenticación real
 3. Agregar validación de datos
 4. Mejorar la interfaz de usuario
 5. Implementar más funcionalidades de seguimiento de sueño
+6. Optimizar rendimiento y experiencia de usuario
