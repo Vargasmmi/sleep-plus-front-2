@@ -1,107 +1,145 @@
-# Sleep Plus Admin Panel
+# Sleep Plus Frontend & Backend
 
-A modern admin panel built with refine.dev, React, and Ant Design for managing sleep clinic operations.
+Sistema de seguimiento de sueño con frontend React y backend JSON Server.
 
-## Features
+## 🚀 Estado de Despliegue
 
-- 🏥 **Patient Management**: Create, edit, view, and manage patient records
-- 👨‍⚕️ **Doctor Management**: Manage doctor profiles and availability
-- 📅 **Appointment System**: Schedule and track appointments
-- 📊 **Dashboard**: Overview of clinic statistics and recent activities
-- 🔐 **Authentication**: Secure login system with role-based access
-- 📱 **Responsive Design**: Works on desktop and mobile devices
+### Frontend
+- **URL:** https://sleep-plus-front-2-frontend.dqyvuv.easypanel.host
+- **Estado:** ✅ Desplegado y funcionando
+- **Puerto:** 3000
 
-## Tech Stack
+### Backend
+- **URL directa:** http://168.231.92.67:3001
+- **Estado:** ✅ Desplegado y funcionando
+- **Puerto:** 3001
+- **Nota:** El backend no tiene dominio temporal de EasyPanel, usar la URL con puerto directo
 
-- **Framework**: [refine.dev](https://refine.dev/)
-- **UI Library**: [Ant Design](https://ant.design/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Language**: TypeScript
-- **State Management**: React Query (via refine)
-- **Routing**: React Router v6
+## 📁 Estructura del Proyecto
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/Vargasmmi/sleep-plus-front-2.git
-cd sleep-plus-front-2
+```
+sleep-plus-front-2/
+├── src/                    # Código fuente del frontend
+│   ├── pages/             # Páginas de la aplicación
+│   ├── services/          # Servicios API
+│   │   └── api.ts        # Cliente API para el backend
+│   └── App.tsx           # Componente principal
+├── backend/               # Backend con JSON Server
+│   ├── server.js         # Servidor Express
+│   ├── db.json          # Base de datos JSON
+│   ├── package.json     # Dependencias
+│   └── Dockerfile       # Configuración Docker
+├── .env.development      # Variables de entorno desarrollo
+├── .env.production       # Variables de entorno producción
+└── Dockerfile           # Docker del frontend
 ```
 
-2. Install dependencies:
+## 🛠️ Tecnologías
+
+### Frontend
+- React + TypeScript
+- Vite
+- Refine Framework
+- Ant Design
+
+### Backend
+- Node.js + Express
+- JSON Server
+- CORS habilitado
+
+## 📡 API Endpoints
+
+Base URL: `http://168.231.92.67:3001`
+
+- `GET /health` - Estado del servidor
+- `GET /api` - Información de la API
+- `GET/POST/PUT/DELETE /api/users` - Gestión de usuarios
+- `GET/POST/PUT/DELETE /api/sleep-records` - Registros de sueño
+- `GET/POST/PUT/DELETE /api/sleep-goals` - Metas de sueño
+- `GET /api/statistics` - Estadísticas
+
+## 🧪 Pruebas de API
+
+```bash
+# Health check
+curl http://168.231.92.67:3001/health
+
+# Obtener usuarios
+curl http://168.231.92.67:3001/api/users
+
+# Crear registro de sueño
+curl -X POST http://168.231.92.67:3001/api/sleep-records \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": 1,
+    "date": "2024-03-23",
+    "bedTime": "23:00",
+    "wakeTime": "07:00",
+    "duration": 8,
+    "quality": 5,
+    "notes": "Buena noche de sueño"
+  }'
+```
+
+## 💻 Desarrollo Local
+
+### Frontend
 ```bash
 npm install
-```
-
-3. Start the development server:
-```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
-
-### Default Login Credentials
-
-- **Email**: admin@sleepplus.com
-- **Password**: demo123
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm start` - Serve production build
-
-## Project Structure
-
-```
-src/
-├── pages/           # Page components
-│   ├── patients/    # Patient CRUD pages
-│   ├── doctors/     # Doctor CRUD pages
-│   ├── appointments/# Appointment CRUD pages
-│   ├── dashboard/   # Dashboard page
-│   └── login/       # Login page
-├── authProvider.ts  # Authentication logic
-├── App.tsx         # Main application component
-├── main.tsx        # Application entry point
-└── index.css       # Global styles
-```
-
-## Deployment
-
-### Docker
-
-The project includes a Dockerfile for easy deployment:
-
+### Backend
 ```bash
-docker build -t sleep-plus-admin .
-docker run -p 3000:3000 sleep-plus-admin
+cd backend
+npm install
+npm run dev
 ```
 
-### EasyPanel
+## 🚀 Despliegue en EasyPanel
 
-This project is configured for deployment on EasyPanel. Simply connect your GitHub repository and EasyPanel will automatically build and deploy the application.
+### Frontend (ya desplegado)
+```bash
+# Actualizar frontend
+git add .
+git commit -m "Update frontend"
+git push origin main
 
-## Environment Variables
+# Redesplegar
+curl -X POST http://168.231.92.67:3000/api/trpc/services.app.deployService \
+  -H "Authorization: Bearer [TOKEN]" \
+  -H "Content-Type: application/json" \
+  -d '{"json":{"projectName":"sleep-plus-front-2","serviceName":"frontend","forceRebuild":true}}'
+```
 
-No environment variables are required for the basic setup. The application uses a mock API for demonstration purposes.
+### Backend (ya desplegado)
+```bash
+# El backend se ejecuta en el puerto 3001
+# Accesible en: http://168.231.92.67:3001
+```
 
-## Contributing
+## 📝 Notas Importantes
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. El backend no tiene dominio temporal asignado en EasyPanel
+2. Usar la URL con puerto directo: `http://168.231.92.67:3001`
+3. El frontend está configurado para conectarse al backend correctamente
+4. Los datos se almacenan en `backend/db.json` (no persistente entre reinicios)
 
-## License
+## 🔧 Configuración Manual del Dominio (EasyPanel)
 
-This project is licensed under the MIT License.
+Si necesitas asignar un dominio al backend:
+
+1. Accede a EasyPanel: http://168.231.92.67:3000
+2. Ve a: Proyectos → sleep-plus-front-2 → backend
+3. En "Domains", configura:
+   - Host: sleep-plus-front-2-backend.dqyvuv.easypanel.host
+   - Port: 3001
+   - HTTPS: Habilitado
+
+## 📈 Próximos Pasos
+
+1. Migrar a una base de datos persistente
+2. Implementar autenticación real
+3. Agregar validación de datos
+4. Mejorar la interfaz de usuario
+5. Implementar más funcionalidades de seguimiento de sueño

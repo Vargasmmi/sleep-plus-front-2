@@ -1,0 +1,4 @@
+# EasyPanel Configuration
+domain: sleep-plus-front-2-backend.dqyvuv.easypanel.host
+port: 3001
+https: true

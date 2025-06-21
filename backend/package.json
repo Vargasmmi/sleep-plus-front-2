@@ -14,5 +14,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
+  },
+  "easypanel": {
+    "domain": "sleep-plus-front-2-backend.dqyvuv.easypanel.host"
   }
 }
