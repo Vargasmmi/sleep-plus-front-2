@@ -16576,6 +16576,153 @@
       "metadata": {},
       "timestamp": "2025-06-19T16:36:22.252Z",
       "id": "log-1750350982252-m4k5usbla"
+    },
+    {
+      "userId": "emp-002",
+      "userEmail": "john.smith@lamattressstore.com",
+      "userName": "John Smith",
+      "action": "view",
+      "resource": "employees",
+      "resourceId": "list",
+      "details": {
+        "count": 6,
+        "filters": [
+          {
+            "field": "storeId",
+            "operator": "eq",
+            "value": "store-001"
+          },
+          {
+            "field": "role",
+            "operator": "eq",
+            "value": "agent"
+          }
+        ]
+      },
+      "metadata": {},
+      "timestamp": "2025-06-20T16:59:21.568Z",
+      "id": "log-1750438761568-zwgwp1734"
+    },
+    {
+      "userId": "emp-002",
+      "userEmail": "john.smith@lamattressstore.com",
+      "userName": "John Smith",
+      "action": "view",
+      "resource": "sales",
+      "resourceId": "list",
+      "details": {
+        "count": 3,
+        "filters": [
+          {
+            "field": "storeId",
+            "operator": "eq",
+            "value": "store-001"
+          }
+        ]
+      },
+      "metadata": {},
+      "timestamp": "2025-06-20T16:59:21.573Z",
+      "id": "log-1750438761573-i0h0n1p3m"
+    },
+    {
+      "userId": "emp-002",
+      "userEmail": "john.smith@lamattressstore.com",
+      "userName": "John Smith",
+      "action": "view",
+      "resource": "employees",
+      "resourceId": "emp-002",
+      "details": {
+        "timestamp": "2025-06-20T16:59:26.765Z"
+      },
+      "metadata": {},
+      "timestamp": "2025-06-20T16:59:26.765Z",
+      "id": "log-1750438766765-0nyss05gz"
+    },
+    {
+      "userId": "emp-002",
+      "userEmail": "john.smith@lamattressstore.com",
+      "userName": "John Smith",
+      "action": "logout",
+      "resource": "auth",
+      "resourceId": null,
+      "details": {},
+      "metadata": {},
+      "timestamp": "2025-06-20T16:59:34.333Z",
+      "id": "log-1750438774333-3gbztxjwr"
+    },
+    {
+      "userId": "emp-demo",
+      "userEmail": "demo@lamattressstore.com",
+      "userName": "Demo Usuario",
+      "action": "login",
+      "resource": "auth",
+      "resourceId": null,
+      "details": {
+        "email": "demo@lamattressstore.com",
+        "role": "agent",
+        "storeId": "store-001",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0",
+        "timestamp": "2025-06-20T16:59:52.192Z"
+      },
+      "metadata": {},
+      "timestamp": "2025-06-20T16:59:52.192Z",
+      "id": "log-1750438792192-p7oqlxsyy"
+    },
+    {
+      "userId": "emp-demo",
+      "userEmail": "demo@lamattressstore.com",
+      "userName": "Demo Usuario",
+      "action": "login",
+      "resource": "auth",
+      "resourceId": null,
+      "details": {
+        "email": "demo@lamattressstore.com",
+        "role": "agent",
+        "storeId": "store-001",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0",
+        "timestamp": "2025-06-20T16:59:55.138Z"
+      },
+      "metadata": {},
+      "timestamp": "2025-06-20T16:59:55.138Z",
+      "id": "log-1750438795138-xpao2ar4n"
+    },
+    {
+      "userId": "emp-demo",
+      "userEmail": "demo@lamattressstore.com",
+      "userName": "Demo Usuario",
+      "action": "view",
+      "resource": "employees",
+      "resourceId": "list",
+      "details": {
+        "count": 6,
+        "filters": [
+          {
+            "field": "role",
+            "operator": "eq",
+            "value": "agent"
+          },
+          {
+            "field": "storeId",
+            "operator": "eq",
+            "value": "store-001"
+          }
+        ]
+      },
+      "metadata": {},
+      "timestamp": "2025-06-20T16:59:55.622Z",
+      "id": "log-1750438795622-to61e8ozy"
+    },
+    {
+      "userId": "emp-demo",
+      "userEmail": "demo@lamattressstore.com",
+      "userName": "Demo Usuario",
+      "action": "logout",
+      "resource": "auth",
+      "resourceId": null,
+      "details": {},
+      "metadata": {},
+      "timestamp": "2025-06-20T17:00:01.275Z",
+      "id": "log-1750438801275-5o4b7ajd8"
     }
   ],
   "webhooks": [

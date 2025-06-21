@@ -1,0 +1,88 @@
+{
+  "name": "Sleep+ Admin",
+  "services": [
+    {
+      "type": "mysql",
+      "data": {
+        "serviceName": "database",
+        "databaseName": "sleepplus",
+        "user": "sleepplus",
+        "image": "mysql:8",
+        "resources": {
+          "memoryReservation": 512,
+          "memoryLimit": 1024,
+          "cpuReservation": 0.5,
+          "cpuLimit": 1
+        }
+      }
+    },
+    {
+      "type": "app",
+      "data": {
+        "serviceName": "backend",
+        "source": {
+          "type": "git",
+          "repo": "https://github.com/yourusername/sleep-plus-admin.git",
+          "ref": "main",
+          "path": "/backend"
+        },
+        "build": {
+          "type": "nixpacks",
+          "startCommand": "node server/server-simple.js"
+        },
+        "env": "NODE_ENV=production\nPORT=3001\nDATABASE_HOST=database\nDATABASE_NAME=sleepplus\nDATABASE_USER=sleepplus",
+        "domains": [
+          {
+            "host": "api.sleep-plus.yourdomain.com",
+            "https": true,
+            "port": 3001
+          }
+        ],
+        "ports": [
+          {
+            "published": 3001,
+            "target": 3001,
+            "protocol": "tcp"
+          }
+        ],
+        "resources": {
+          "memoryReservation": 256,
+          "memoryLimit": 512,
+          "cpuReservation": 0.25,
+          "cpuLimit": 0.5
+        }
+      }
+    },
+    {
+      "type": "app",
+      "data": {
+        "serviceName": "frontend",
+        "source": {
+          "type": "git",
+          "repo": "https://github.com/yourusername/sleep-plus-admin.git",
+          "ref": "main",
+          "path": "/frontend"
+        },
+        "build": {
+          "type": "nixpacks",
+          "buildCommand": "npm run build",
+          "startCommand": "npm run preview"
+        },
+        "env": "NODE_ENV=production\nVITE_API_URL=https://api.sleep-plus.yourdomain.com\nVITE_APP_NAME=Sleep+ Admin",
+        "domains": [
+          {
+            "host": "sleep-plus.yourdomain.com",
+            "https": true,
+            "port": 4173
+          }
+        ],
+        "resources": {
+          "memoryReservation": 256,
+          "memoryLimit": 512,
+          "cpuReservation": 0.25,
+          "cpuLimit": 0.5
+        }
+      }
+    }
+  ]
+}

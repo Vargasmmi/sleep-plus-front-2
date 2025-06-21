@@ -50,9 +50,11 @@ export default defineConfig(({ mode }) => {
   }, {});
   
   return {
+    base: '/',
     plugins: [react()],
     server: {
       port: 5173,
+      host: true,
       proxy: mode === 'development' ? proxyConfig : undefined,
     },
     resolve: {
