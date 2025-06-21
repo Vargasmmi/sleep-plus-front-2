@@ -126,7 +126,6 @@ curl -X POST http://168.231.92.67:3000/api/trpc/services.app.deployService \
 3. El frontend está configurado para conectarse al backend correctamente
 4. Los datos se almacenan en `backend/db.json` (no persistente entre reinicios)
 
-
 ## 📈 Próximos Pasos
 
 **Actualizado: Enero 2025**
@@ -137,3 +136,9 @@ curl -X POST http://168.231.92.67:3000/api/trpc/services.app.deployService \
 4. Mejorar la interfaz de usuario
 5. Implementar más funcionalidades de seguimiento de sueño
 6. Optimizar rendimiento y experiencia de usuario
+
+## 🔄 Última Actualización
+
+**Fecha:** 15 de Enero 2025
+**Estado:** Migración completa de datos del proyecto sleep-plus-old completada
+**Commit:** feat: migrate complete data model and endpoints from sleep-plus-old
