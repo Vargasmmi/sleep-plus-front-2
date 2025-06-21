@@ -1,1 +1,284 @@
-{}
+{
+  "users": [
+    {
+      "id": "user_1",
+      "email": "admin@sleepplus.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust_1",
+      "phone": "+1234567890",
+      "email": "john.doe@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "address": {
+        "street": "123 Main St",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zipCode": "90001"
+      },
+      "tier": "gold",
+      "source": "online",
+      "tags": ["vip", "early-adopter"],
+      "lifetimeValue": 2500,
+      "firstPurchaseDate": "2023-01-15T00:00:00.000Z",
+      "lastPurchaseDate": "2024-12-01T00:00:00.000Z",
+      "lastContactDate": "2024-12-15T00:00:00.000Z",
+      "purchasedItems": ["Sleep Tracker Pro", "Premium Subscription"],
+      "isEliteMember": true,
+      "membershipStatus": "active",
+      "totalTrades": 2,
+      "totalCreditEarned": 300,
+      "currentCredit": 150,
+      "doNotCall": false,
+      "notes": "Excellent customer, very satisfied with products",
+      "createdAt": "2023-01-15T00:00:00.000Z",
+      "updatedAt": "2024-12-15T00:00:00.000Z"
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "sub_1",
+      "customerId": "cust_1",
+      "plan": "elite",
+      "status": "active",
+      "pricing": {
+        "monthly": 29.99,
+        "annual": 299.99,
+        "currency": "USD"
+      },
+      "billing": {
+        "frequency": "monthly",
+        "nextBillingDate": "2025-01-15T00:00:00.000Z",
+        "paymentMethod": "stripe",
+        "stripeCustomerId": "cus_123456",
+        "stripeSubscriptionId": "sub_123456",
+        "stripePriceId": "price_123456",
+        "lastFour": "4242"
+      },
+      "services": {
+        "cleaningsTotal": 12,
+        "cleaningsUsed": 3,
+        "protectionActive": true,
+        "inspectionsTotal": 4,
+        "inspectionsUsed": 1
+      },
+      "credits": {
+        "accumulated": 150,
+        "used": 0,
+        "expiration": "2025-12-31T23:59:59.000Z"
+      },
+      "startDate": "2024-01-15T00:00:00.000Z",
+      "soldBy": "emp_1",
+      "createdAt": "2024-01-15T00:00:00.000Z",
+      "updatedAt": "2024-12-15T00:00:00.000Z"
+    }
+  ],
+  "evaluations": [],
+  "employees": [
+    {
+      "id": "emp_1",
+      "employeeId": "E001",
+      "email": "agent1@sleepplus.com",
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "role": "agent",
+      "storeId": "store_1",
+      "phoneExtension": "101",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+      "status": "active",
+      "shift": "morning",
+      "hiredAt": "2023-06-01T00:00:00.000Z",
+      "commissions": {
+        "totalEvaluations": 150,
+        "totalCommissionEarned": 4500,
+        "currentMonthEvaluations": 15,
+        "currentMonthCommission": 450
+      },
+      "performance": {
+        "callsToday": 25,
+        "callsTarget": 30,
+        "conversionsToday": 5,
+        "conversionRate": 0.20,
+        "averageCallDuration": 180
+      },
+      "createdAt": "2023-06-01T00:00:00.000Z",
+      "updatedAt": "2024-12-20T00:00:00.000Z"
+    }
+  ],
+  "stores": [
+    {
+      "id": "store_1",
+      "name": "Sleep Plus Downtown",
+      "code": "SPD001",
+      "address": {
+        "street": "456 Broadway",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zipCode": "90013"
+      },
+      "phone": "+1-213-555-0100",
+      "managerId": "emp_manager_1",
+      "hours": {
+        "monday": { "open": "09:00", "close": "21:00" },
+        "tuesday": { "open": "09:00", "close": "21:00" },
+        "wednesday": { "open": "09:00", "close": "21:00" },
+        "thursday": { "open": "09:00", "close": "21:00" },
+        "friday": { "open": "09:00", "close": "22:00" },
+        "saturday": { "open": "10:00", "close": "22:00" },
+        "sunday": { "open": "11:00", "close": "19:00" }
+      },
+      "serviceArea": {
+        "zipCodes": ["90001", "90013", "90014", "90015", "90017"],
+        "radius": 10
+      },
+      "performance": {
+        "monthlyTarget": 100000,
+        "currentSales": 85000
+      },
+      "status": "active",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2024-12-01T00:00:00.000Z"
+    }
+  ],
+  "calls": [],
+  "sales": [],
+  "campaigns": [
+    {
+      "id": "camp_1",
+      "name": "New Year Sleep Better Campaign",
+      "type": "seasonal",
+      "status": "active",
+      "targeting": {
+        "customerTiers": ["gold", "silver"],
+        "lastPurchaseRange": {
+          "min": 30,
+          "max": 180
+        },
+        "hasSubscription": false,
+        "productTypes": ["tracker", "subscription"]
+      },
+      "script": {
+        "opening": "Hi [Customer Name], this is [Agent Name] from Sleep Plus. How has your sleep been lately?",
+        "valueProps": [
+          "Track your sleep patterns with 99% accuracy",
+          "Get personalized sleep improvement recommendations",
+          "Join thousands who improved their sleep quality by 40%"
+        ],
+        "closing": "Would you like to start your journey to better sleep today with our special New Year offer?",
+        "objectionHandlers": {
+          "too_expensive": "I understand price is important. That's why we're offering 30% off plus flexible payment plans.",
+          "not_interested": "I appreciate your time. May I ask what's your biggest sleep challenge right now?"
+        }
+      },
+      "offer": {
+        "type": "percentage",
+        "value": 30,
+        "validUntil": "2025-01-31T23:59:59.000Z"
+      },
+      "metrics": {
+        "totalCalls": 0,
+        "contacted": 0,
+        "converted": 0,
+        "revenue": 0
+      },
+      "assignedTo": ["emp_1"],
+      "startDate": "2025-01-01T00:00:00.000Z",
+      "endDate": "2025-01-31T23:59:59.000Z",
+      "createdBy": "user_1",
+      "createdAt": "2024-12-20T00:00:00.000Z",
+      "updatedAt": "2024-12-20T00:00:00.000Z"
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach_1",
+      "code": "FIRST_SALE",
+      "name": "First Sale",
+      "description": "Complete your first sale",
+      "icon": "🎯",
+      "category": "sales",
+      "criteria": {
+        "type": "count",
+        "metric": "sales",
+        "target": 1,
+        "timeframe": "all_time"
+      },
+      "rewards": {
+        "points": 100,
+        "bonus": 50,
+        "badge": true
+      },
+      "tier": "bronze",
+      "unlockedBy": [
+        {
+          "userId": "emp_1",
+          "unlockedAt": "2023-06-05T00:00:00.000Z"
+        }
+      ],
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "scripts": [
+    {
+      "id": "script_1",
+      "name": "Standard Cold Call",
+      "type": "cold",
+      "version": "1.0",
+      "status": "active",
+      "segments": [
+        {
+          "id": "seg_1",
+          "type": "opening",
+          "content": "Hello, is this [Customer Name]? Hi, I'm [Agent Name] from Sleep Plus. Do you have a moment to discuss how we can help improve your sleep quality?",
+          "conditions": {
+            "customerTier": ["bronze", "silver", "gold"],
+            "hasSubscription": false
+          },
+          "branches": [
+            {
+              "condition": "positive_response",
+              "nextSegmentId": "seg_2"
+            },
+            {
+              "condition": "negative_response",
+              "nextSegmentId": "seg_close"
+            }
+          ]
+        }
+      ],
+      "variables": ["Customer Name", "Agent Name"],
+      "successRate": 0.15,
+      "usageCount": 0,
+      "createdBy": "user_1",
+      "createdAt": "2023-01-15T00:00:00.000Z",
+      "updatedAt": "2024-12-01T00:00:00.000Z"
+    }
+  ],
+  "commissions": [],
+  "shopifySettings": [],
+  "shopifyProducts": [],
+  "shopifyCustomers": [],
+  "shopifyDiscounts": [],
+  "shopifyPriceRules": [],
+  "stripeSettings": [],
+  "webhooks": [],
+  "activities": [],
+  "systemSettings": [
+    {
+      "id": "settings_1",
+      "key": "commission_rate",
+      "value": "0.10",
+      "description": "Base commission rate for sales",
+      "category": "commissions",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "notifications": []
+}

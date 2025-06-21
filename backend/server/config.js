@@ -12,7 +12,14 @@ const config = {
   cors: {
     origin: process.env.CORS_ORIGIN 
       ? process.env.CORS_ORIGIN.split(',')
-      : ['http://localhost:5173', 'http://localhost:3001', 'http://127.0.0.1:5173', 'http://127.0.0.1:3001'],
+      : [
+        'http://localhost:5173',
+        'http://localhost:3001',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:3001',
+        'https://sleep-plus-front-2-frontend.dqyvuv.easypanel.host',
+        'http://168.231.92.67:3001'
+      ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Shopify-Access-Token'],

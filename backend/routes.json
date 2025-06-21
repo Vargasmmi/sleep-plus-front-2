@@ -9,5 +9,17 @@
   "/employees/:id/commissions": "/commissions?userId=:id",
   "/stores/:id/employees": "/employees?storeId=:id",
   "/stores/:id/sales": "/sales?storeId=:id",
-  "/campaigns/:id/calls": "/calls?metadata.campaignId=:id"
+  "/campaigns/:id/calls": "/calls?metadata.campaignId=:id",
+  "/subscriptions/:id/pause": "/subscriptions/:id",
+  "/subscriptions/:id/resume": "/subscriptions/:id",
+  "/evaluations/:id/approve": "/evaluations/:id",
+  "/evaluations/:id/redeem": "/evaluations/:id",
+  "/shopify/test-connection": "/shopifySettings",
+  "/shopify/products/sync": "/shopifyProducts",
+  "/shopify/customers/sync": "/shopifyCustomers",
+  "/stripe/test-connection": "/stripeSettings",
+  "/stripe/payment-links": "/stripeSettings",
+  "/webhooks/trade-in": "/webhooks",
+  "/webhooks/shopify": "/webhooks",
+  "/webhooks/stripe": "/webhooks"
 }

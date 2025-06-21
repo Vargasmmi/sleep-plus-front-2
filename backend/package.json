@@ -2,17 +2,23 @@
   "name": "sleep-plus-admin-backend",
   "version": "1.0.0",
   "description": "Backend API para Sleep+ Admin",
-  "main": "server/server-simple.js",
+  "main": "server/server-enhanced.js",
   "scripts": {
-    "start": "node server/server-simple.js",
-    "dev": "nodemon server/server-simple.js",
-    "start:prod": "NODE_ENV=production node server/server-simple.js"
+    "start": "node server/server-enhanced.js",
+    "dev": "nodemon server/server-enhanced.js",
+    "start:simple": "node server/server-simple.js",
+    "start:prod": "NODE_ENV=production node server/server-simple.js",
+    "import:sample": "node import-sample-data.js",
+    "reset:db": "echo '{}' > db.json && echo 'Database reset complete'",
+    "test": "node test-backend.js",
+    "test:remote": "API_URL=https://sleep-plus-backend-api.dqyvuv.easypanel.host node test-backend.js"
   },
   "dependencies": {
     "json-server": "^0.17.4",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "stripe": "^14.17.0"
+    "stripe": "^14.17.0",
+    "axios": "^1.6.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
