@@ -4,7 +4,7 @@
   "description": "Backend API para Sleep+ Admin",
   "main": "server/server-enhanced.js",
   "scripts": {
-    "start": "node server/server-enhanced.js",
+    "start": "node server/index.js",
     "dev": "nodemon server/server-enhanced.js",
     "start:simple": "node server/server-simple.js",
     "start:prod": "NODE_ENV=production node server/server-simple.js",
