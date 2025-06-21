@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Plus Backend - API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f7f9fc;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        header .header-content {
+            padding: 0 40px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .status-info {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .status-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-badge.online {
+            background: #48bb78;
+        }
+        
+        .endpoint-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .endpoint-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .endpoint-item {
+            background: #f7f9fc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .endpoint-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .method {
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        
+        .method.get {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .method.post {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .method.put {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .method.delete {
+            background: #f56565;
+            color: white;
+        }
+        
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #2d3748;
+            word-break: break-all;
+        }
+        
+        .endpoint-description {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+        
+        .test-button {
+            margin-top: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: #5a67d8;
+        }
+        
+        .test-response {
+            margin-top: 15px;
+            padding: 15px;
+            background: #2d3748;
+            color: #f7fafc;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .health-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .health-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .health-item.healthy {
+            border-left: 4px solid #48bb78;
+        }
+        
+        .health-item.error {
+            border-left: 4px solid #f56565;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>🚀 Sleep Plus Backend API</h1>
+                <p>Documentación completa de endpoints disponibles</p>
+                <div class="status-info">
+                    <div class="status-badge online">
+                        <span>✅ Online</span>
+                    </div>
+                    <div class="status-badge">
+                        <span id="server-url">Loading...</span>
+                    </div>
+                    <div class="status-badge">
+                        <span id="timestamp">-</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Health Check Section -->
+        <div class="endpoint-section">
+            <h2 class="section-title">🏥 Health Check</h2>
+            <div class="health-status" id="health-status">
+                <div class="health-item">
+                    <div class="loading"></div>
+                    <p>Verificando estado...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- General Endpoints -->
+        <div class="endpoint-section">
+            <h2 class="section-title">📋 Endpoints Generales</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/health</span>
+                    </div>
+                    <p class="endpoint-description">Verificar el estado del servidor</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/health')">Probar</button>
+                    <div id="response-health" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/debug/files</span>
+                    </div>
+                    <p class="endpoint-description">Verificar estructura de archivos del servidor</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/api/debug/files')">Probar</button>
+                    <div id="response-debug-files" class="test-response" style="display:none"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shopify Endpoints -->
+        <div class="endpoint-section">
+            <h2 class="section-title">🛍️ Shopify Integration</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/shopify/test-connection</span>
+                    </div>
+                    <p class="endpoint-description">Probar conexión con Shopify (requiere dominio y token)</p>
+                    <button class="test-button" onclick="showShopifyTestForm()">Configurar y Probar</button>
+                    <div id="response-shopify-test" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/shopify/products</span>
+                    </div>
+                    <p class="endpoint-description">Obtener lista de productos de Shopify</p>
+                    <button class="test-button" onclick="testShopifyEndpoint('/api/shopify/products')">Probar</button>
+                    <div id="response-shopify-products" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/shopify/customers</span>
+                    </div>
+                    <p class="endpoint-description">Obtener lista de clientes de Shopify</p>
+                    <button class="test-button" onclick="testShopifyEndpoint('/api/shopify/customers')">Probar</button>
+                    <div id="response-shopify-customers" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/shopify/price-rules</span>
+                    </div>
+                    <p class="endpoint-description">Obtener reglas de precio/descuento</p>
+                    <button class="test-button" onclick="testShopifyEndpoint('/api/shopify/price-rules')">Probar</button>
+                    <div id="response-shopify-price-rules" class="test-response" style="display:none"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stripe Endpoints -->
+        <div class="endpoint-section">
+            <h2 class="section-title">💳 Stripe Integration</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/stripe/config</span>
+                    </div>
+                    <p class="endpoint-description">Obtener configuración actual de Stripe</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/api/stripe/config')">Probar</button>
+                    <div id="response-stripe-config" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/stripe/payment-links</span>
+                    </div>
+                    <p class="endpoint-description">Listar todos los payment links</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/api/stripe/payment-links')">Probar</button>
+                    <div id="response-stripe-links" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/stripe/stats</span>
+                    </div>
+                    <p class="endpoint-description">Estadísticas de Stripe</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/api/stripe/stats')">Probar</button>
+                    <div id="response-stripe-stats" class="test-response" style="display:none"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscriptions Endpoints -->
+        <div class="endpoint-section">
+            <h2 class="section-title">🔄 Suscripciones</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/subscriptions/stats</span>
+                    </div>
+                    <p class="endpoint-description">Estadísticas de suscripciones</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/api/subscriptions/stats')">Probar</button>
+                    <div id="response-subs-stats" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/subscriptions/sync-stripe</span>
+                    </div>
+                    <p class="endpoint-description">Sincronizar suscripciones con Stripe</p>
+                    <button class="test-button" onclick="testEndpoint('POST', '/api/subscriptions/sync-stripe')">Probar</button>
+                    <div id="response-sync-stripe" class="test-response" style="display:none"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JSON Server Endpoints -->
+        <div class="endpoint-section">
+            <h2 class="section-title">📊 JSON Server (Base de Datos)</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/users</span>
+                    </div>
+                    <p class="endpoint-description">Obtener todos los usuarios</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/users')">Probar</button>
+                    <div id="response-users" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/customers</span>
+                    </div>
+                    <p class="endpoint-description">Obtener todos los clientes</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/customers')">Probar</button>
+                    <div id="response-customers" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/employees</span>
+                    </div>
+                    <p class="endpoint-description">Obtener todos los empleados</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/employees')">Probar</button>
+                    <div id="response-employees" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/subscriptions</span>
+                    </div>
+                    <p class="endpoint-description">Obtener todas las suscripciones</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/subscriptions')">Probar</button>
+                    <div id="response-subscriptions" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/evaluations</span>
+                    </div>
+                    <p class="endpoint-description">Obtener todas las evaluaciones de trade-in</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/evaluations')">Probar</button>
+                    <div id="response-evaluations" class="test-response" style="display:none"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Webhook Endpoints -->
+        <div class="endpoint-section">
+            <h2 class="section-title">🪝 Webhooks</h2>
+            <div class="endpoint-grid">
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/webhook-events</span>
+                    </div>
+                    <p class="endpoint-description">Listar eventos de webhook configurados</p>
+                    <button class="test-button" onclick="testEndpoint('GET', '/api/webhook-events')">Probar</button>
+                    <div id="response-webhook-events" class="test-response" style="display:none"></div>
+                </div>
+                
+                <div class="endpoint-item">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/webhooks/trade-evaluation</span>
+                    </div>
+                    <p class="endpoint-description">Webhook para evaluación de trade-in</p>
+                    <button class="test-button" onclick="showTradeInForm()">Probar con datos de ejemplo</button>
+                    <div id="response-trade-evaluation" class="test-response" style="display:none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obtener URL base del servidor
+        const BASE_URL = window.location.origin;
+        
+        // Actualizar información del servidor
+        async function updateServerInfo() {
+            document.getElementById('server-url').textContent = BASE_URL;
+            document.getElementById('timestamp').textContent = new Date().toLocaleString('es-ES');
+            
+            // Verificar health
+            try {
+                const response = await fetch(`${BASE_URL}/health`);
+                const data = await response.json();
+                
+                const healthHtml = `
+                    <div class="health-item ${data.status === 'ok' ? 'healthy' : 'error'}">
+                        <h3>Estado del Servidor</h3>
+                        <p>${data.status === 'ok' ? '✅ Operativo' : '❌ Error'}</p>
+                    </div>
+                    <div class="health-item ${data.frontend ? 'healthy' : 'error'}">
+                        <h3>Frontend</h3>
+                        <p>${data.frontend ? '✅ Disponible' : '❌ No encontrado'}</p>
+                    </div>
+                    <div class="health-item healthy">
+                        <h3>Puerto</h3>
+                        <p>${data.port}</p>
+                    </div>
+                    <div class="health-item healthy">
+                        <h3>Servidor</h3>
+                        <p>${data.server}</p>
+                    </div>
+                `;
+                document.getElementById('health-status').innerHTML = healthHtml;
+            } catch (error) {
+                document.getElementById('health-status').innerHTML = `
+                    <div class="health-item error">
+                        <h3>Error</h3>
+                        <p>No se pudo conectar con el servidor</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Test endpoint genérico
+        async function testEndpoint(method, path, body = null) {
+            const responseId = `response-${path.replace(/\//g, '-').substring(1)}`;
+            const responseDiv = document.getElementById(responseId);
+            
+            if (!responseDiv) {
+                console.error('No response div found for:', responseId);
+                return;
+            }
+            
+            responseDiv.style.display = 'block';
+            responseDiv.textContent = 'Cargando...';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(`${BASE_URL}${path}`, options);
+                const data = await response.json();
+                
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+                
+                // Color code based on response
+                if (response.ok) {
+                    responseDiv.style.borderLeft = '4px solid #48bb78';
+                } else {
+                    responseDiv.style.borderLeft = '4px solid #f56565';
+                }
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+                responseDiv.style.borderLeft = '4px solid #f56565';
+            }
+        }
+        
+        // Test Shopify endpoints
+        async function testShopifyEndpoint(path) {
+            // Aquí deberías obtener las credenciales de Shopify de algún lugar
+            // Por ahora usaremos valores de ejemplo
+            const shopifyData = {
+                shopifyDomain: 'your-shop.myshopify.com',
+                accessToken: 'your-access-token'
+            };
+            
+            const responseId = `response-${path.replace(/\//g, '-').substring(1)}`;
+            const responseDiv = document.getElementById(responseId);
+            
+            if (confirm('Este endpoint requiere credenciales de Shopify. ¿Deseas usar credenciales de prueba?')) {
+                testEndpoint('POST', path, shopifyData);
+            }
+        }
+        
+        // Mostrar formulario de prueba de Shopify
+        function showShopifyTestForm() {
+            const domain = prompt('Ingresa el dominio de Shopify (ej: your-shop.myshopify.com):');
+            const token = prompt('Ingresa el Access Token de Shopify:');
+            
+            if (domain && token) {
+                testEndpoint('POST', '/api/shopify/test-connection', {
+                    shopifyDomain: domain,
+                    accessToken: token
+                });
+            }
+        }
+        
+        // Mostrar formulario de trade-in
+        function showTradeInForm() {
+            const exampleData = {
+                customer: {
+                    email: 'test@example.com',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    phone: '+1234567890'
+                },
+                mattress: {
+                    brand: 'Sleep Plus',
+                    model: 'Premium King',
+                    condition: 'good',
+                    age: '2 years'
+                },
+                credit: 250,
+                photos: []
+            };
+            
+            if (confirm('¿Enviar webhook de prueba con datos de ejemplo?\n\n' + JSON.stringify(exampleData, null, 2))) {
+                testEndpoint('POST', '/api/webhooks/trade-evaluation', exampleData);
+            }
+        }
+        
+        // Inicializar
+        updateServerInfo();
+        setInterval(updateServerInfo, 30000); // Actualizar cada 30 segundos
+    </script>
+</body>
+</html>

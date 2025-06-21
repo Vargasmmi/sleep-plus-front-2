@@ -71,6 +71,27 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API Documentation endpoint
+app.get('/api-docs', (req, res) => {
+  const apiDocsPath = path.join(__dirname, 'api-documentation.html');
+  if (fs.existsSync(apiDocsPath)) {
+    res.sendFile(apiDocsPath);
+  } else {
+    res.status(404).send('API Documentation not found');
+  }
+});
+
+// Redirect root to API docs when no frontend is available
+app.get('/', (req, res, next) => {
+  const apiDocsPath = path.join(__dirname, 'api-documentation.html');
+  if (!fs.existsSync(indexPath) && fs.existsSync(apiDocsPath)) {
+    console.log('📚 Serving API documentation instead of frontend');
+    res.sendFile(apiDocsPath);
+  } else {
+    next();
+  }
+});
+
 // Test page para verificar frontend
 app.get('/test-frontend', (req, res) => {
   const testHtml = `
@@ -1488,6 +1509,9 @@ app.listen(PORT, HOST, () => {
   }
   
   console.log('📋 Available endpoints:');
+  console.log('  Documentation:');
+  console.log(`    GET  ${PUBLIC_URL}/api-docs         📚 Full API Documentation`);
+  console.log('');
   console.log('  Debug:');
   console.log(`    GET  ${PUBLIC_URL}/health`);
   console.log(`    GET  ${PUBLIC_URL}/api/debug/files`);
