@@ -37,7 +37,7 @@ function App() {
         >
           <AntdApp>
             <Refine
-              dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+              dataProvider={dataProvider(import.meta.env.VITE_API_URL || "http://localhost:3001/api")}
               notificationProvider={useNotificationProvider}
               authProvider={authProvider}
               routerProvider={routerBindings}
@@ -51,35 +51,38 @@ function App() {
                   },
                 },
                 {
-                  name: "patients",
-                  list: "/patients",
-                  create: "/patients/create",
-                  edit: "/patients/edit/:id",
-                  show: "/patients/show/:id",
+                  name: "users",
+                  list: "/users",
+                  create: "/users/create",
+                  edit: "/users/edit/:id",
+                  show: "/users/show/:id",
                   meta: {
+                    label: "Usuarios",
                     icon: <UserOutlined />,
                     canDelete: true,
                   },
                 },
                 {
-                  name: "doctors",
-                  list: "/doctors",
-                  create: "/doctors/create",
-                  edit: "/doctors/edit/:id",
-                  show: "/doctors/show/:id",
+                  name: "sleep-records",
+                  list: "/sleep-records",
+                  create: "/sleep-records/create",
+                  edit: "/sleep-records/edit/:id",
+                  show: "/sleep-records/show/:id",
                   meta: {
-                    icon: <TeamOutlined />,
+                    label: "Registros de Sueño",
+                    icon: <ScheduleOutlined />,
                     canDelete: true,
                   },
                 },
                 {
-                  name: "appointments",
-                  list: "/appointments",
-                  create: "/appointments/create",
-                  edit: "/appointments/edit/:id",
-                  show: "/appointments/show/:id",
+                  name: "sleep-goals",
+                  list: "/sleep-goals",
+                  create: "/sleep-goals/create",
+                  edit: "/sleep-goals/edit/:id",
+                  show: "/sleep-goals/show/:id",
                   meta: {
-                    icon: <ScheduleOutlined />,
+                    label: "Metas de Sueño",
+                    icon: <TeamOutlined />,
                     canDelete: true,
                   },
                 },

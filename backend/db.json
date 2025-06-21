@@ -1,0 +1,88 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Juan Pérez",
+      "email": "juan@example.com",
+      "age": 28,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "María García",
+      "email": "maria@example.com",
+      "age": 32,
+      "createdAt": "2024-01-02T00:00:00.000Z"
+    }
+  ],
+  "sleep-records": [
+    {
+      "id": 1,
+      "userId": 1,
+      "date": "2024-03-20",
+      "bedTime": "23:30",
+      "wakeTime": "07:00",
+      "duration": 7.5,
+      "quality": 4,
+      "notes": "Dormí bien, sin interrupciones"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "date": "2024-03-21",
+      "bedTime": "23:00",
+      "wakeTime": "06:30",
+      "duration": 7.5,
+      "quality": 5,
+      "notes": "Excelente noche de sueño"
+    },
+    {
+      "id": 3,
+      "userId": 2,
+      "date": "2024-03-20",
+      "bedTime": "22:30",
+      "wakeTime": "06:00",
+      "duration": 7.5,
+      "quality": 3,
+      "notes": "Me desperté varias veces"
+    }
+  ],
+  "sleep-goals": [
+    {
+      "id": 1,
+      "userId": 1,
+      "targetHours": 8,
+      "targetBedTime": "23:00",
+      "targetWakeTime": "07:00",
+      "active": true
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "targetHours": 7.5,
+      "targetBedTime": "22:30",
+      "targetWakeTime": "06:00",
+      "active": true
+    }
+  ],
+  "statistics": [
+    {
+      "id": 1,
+      "userId": 1,
+      "period": "weekly",
+      "averageHours": 7.5,
+      "averageQuality": 4.5,
+      "consistency": 85,
+      "calculatedAt": "2024-03-21T12:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "period": "weekly",
+      "averageHours": 7.2,
+      "averageQuality": 3.8,
+      "consistency": 75,
+      "calculatedAt": "2024-03-21T12:00:00.000Z"
+    }
+  ]
+}
