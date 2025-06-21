@@ -19,7 +19,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install serve
+# Install serve globally
 RUN npm install -g serve
 
 # Copy built application from builder stage
@@ -28,5 +28,9 @@ COPY --from=builder /app/dist ./dist
 # Expose port
 EXPOSE 3000
 
-# Start the application - Escuchar en todas las interfaces (0.0.0.0)
-CMD ["serve", "-s", "dist", "-l", "tcp://0.0.0.0:3000", "--no-clipboard"]
+# Force serve to listen on all interfaces
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+# Start the application
+CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:3000 --no-clipboard"]
