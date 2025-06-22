@@ -3,9 +3,9 @@ import { activityLogService } from "../services/activityLogService";
 
 // Función para obtener la URL base de la API
 const getApiUrl = () => {
-  // Si estamos en producción, usar URLs relativas
+  // Si estamos en producción, usar la URL del backend de EasyPanel
   if (import.meta.env.PROD) {
-    return "";
+    return import.meta.env.VITE_API_URL || "https://sleep-plus-front-2-backend.dqyvuv.easypanel.host";
   }
   
   // En desarrollo, usar la variable de entorno o fallback
@@ -14,10 +14,15 @@ const getApiUrl = () => {
 
 // Use environment variable or fallback to localhost
 const API_URL = getApiUrl();
+const FULL_API_URL = `${API_URL}/api`;
+
+console.log('🔧 Auth API URL configured as:', FULL_API_URL);
 
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
     try {
+      console.log('🔐 Attempting login for:', email);
+      
       // In production, this would call your API
       // For demo, we'll accept specific credentials
       const validCredentials = [
@@ -86,9 +91,20 @@ export const authProvider: AuthProvider = {
 
         // Try to fetch employee data from the API, but don't fail if it's not available
         try {
-          const response = await fetch(`${API_URL}/employees/${user.id}`);
+          console.log(`🔍 Fetching employee data from: ${FULL_API_URL}/employees/${user.id}`);
+          
+          const response = await fetch(`${FULL_API_URL}/employees/${user.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          });
+          
           if (response.ok) {
             const employeeData = await response.json();
+            console.log('✅ Employee data fetched successfully:', employeeData);
+            
             userData = {
               ...userData,
               firstName: employeeData.firstName || userData.firstName,
@@ -97,9 +113,11 @@ export const authProvider: AuthProvider = {
               avatar: employeeData.avatar || userData.avatar,
               employeeId: employeeData.employeeId || userData.employeeId,
             };
+          } else {
+            console.warn(`⚠️ Employee API responded with status: ${response.status}`);
           }
         } catch (error) {
-          console.warn('Could not fetch employee data from API, using local data:', error);
+          console.warn('⚠️ Could not fetch employee data from API, using local data:', error);
         }
 
         localStorage.setItem("auth", JSON.stringify(userData));
@@ -112,15 +130,17 @@ export const authProvider: AuthProvider = {
             storeId: userData.storeId
           });
         } catch (error) {
-          console.warn('Activity logging not available:', error);
+          console.warn('⚠️ Activity logging not available:', error);
         }
         
+        console.log('✅ Login successful for:', userData.email);
         return {
           success: true,
           redirectTo: "/",
         };
       }
 
+      console.log('❌ Invalid credentials for:', email);
       return {
         success: false,
         error: {
@@ -129,7 +149,7 @@ export const authProvider: AuthProvider = {
         },
       };
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       return {
         success: false,
         error: {
@@ -141,6 +161,8 @@ export const authProvider: AuthProvider = {
   },
 
   logout: async () => {
+    console.log('🚪 Logging out...');
+    
     // Log logout activity before removing auth
     try {
       await activityLogService.logLogout();
@@ -149,6 +171,7 @@ export const authProvider: AuthProvider = {
     }
     
     localStorage.removeItem("auth");
+    console.log('✅ Logout successful');
     return {
       success: true,
       redirectTo: "/login",

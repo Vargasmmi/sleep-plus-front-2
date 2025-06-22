@@ -5,10 +5,9 @@ import { ACTIVITY_RESOURCES } from "../interfaces/activityLog";
 
 // Función para obtener la URL base de la API
 const getApiUrl = () => {
-  // Si estamos en producción, usar URLs relativas
+  // Si estamos en producción, usar la URL del backend de EasyPanel
   if (import.meta.env.PROD) {
-    // En producción, las APIs están en el mismo dominio
-    return "";
+    return import.meta.env.VITE_API_URL || "https://sleep-plus-front-2-backend.dqyvuv.easypanel.host";
   }
   
   // En desarrollo, usar la variable de entorno o fallback
@@ -17,22 +16,42 @@ const getApiUrl = () => {
 
 // Use environment variable or fallback
 const API_URL = getApiUrl();
+const FULL_API_URL = `${API_URL}/api`;
 
-console.log('🔧 API URL configured as:', API_URL || 'Relative URLs (same origin)');
+console.log('🔧 API URL configured as:', FULL_API_URL);
 
 // Create axios instance
 const axiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: FULL_API_URL,
+  withCredentials: true,
+  timeout: 10000,
 });
+
+// Add request interceptor for debugging
+axiosInstance.interceptors.request.use(
+  (config) => {
+    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    return config;
+  },
+  (error) => {
+    console.error('❌ Request Error:', error);
+    return Promise.reject(error);
+  }
+);
 
 // Add response interceptor for debugging
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log(`API Response for ${response.config.url}:`, response.data);
+    console.log(`✅ API Response for ${response.config.url}:`, response.status);
     return response;
   },
   (error) => {
-    console.error(`API Error for ${error.config?.url}:`, error);
+    console.error(`❌ API Error for ${error.config?.url}:`, {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message
+    });
     return Promise.reject(error);
   }
 );
@@ -72,10 +91,14 @@ export const customDataProvider: DataProvider = {
       
       // Log view activity for important resources
       if (['customers', 'employees', 'sales'].includes(resource)) {
-        activityLogService.logView(getActivityResource(resource), 'list', {
-          count: data.length,
-          filters,
-        });
+        try {
+          activityLogService.logView(getActivityResource(resource), 'list', {
+            count: data.length,
+            filters,
+          });
+        } catch (error) {
+          console.warn('Activity logging failed:', error);
+        }
       }
       
       return {
@@ -89,12 +112,17 @@ export const customDataProvider: DataProvider = {
   },
 
   getOne: async ({ resource, id }) => {
+    console.log(`Getting one ${resource}/${id}`);
     const response = await axiosInstance.get(`/${resource}/${id}`);
     
     // Log view activity
-    activityLogService.logView(getActivityResource(resource), id.toString(), {
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      activityLogService.logView(getActivityResource(resource), id.toString(), {
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.warn('Activity logging failed:', error);
+    }
     
     return {
       data: response.data,
@@ -102,12 +130,17 @@ export const customDataProvider: DataProvider = {
   },
 
   create: async ({ resource, variables }) => {
+    console.log(`Creating ${resource}:`, variables);
     const response = await axiosInstance.post(`/${resource}`, variables);
     
     // Log create activity
-    activityLogService.logCreate(getActivityResource(resource), response.data.id.toString(), {
-      data: variables,
-    });
+    try {
+      activityLogService.logCreate(getActivityResource(resource), response.data.id.toString(), {
+        data: variables,
+      });
+    } catch (error) {
+      console.warn('Activity logging failed:', error);
+    }
     
     return {
       data: response.data,
@@ -115,6 +148,8 @@ export const customDataProvider: DataProvider = {
   },
 
   update: async ({ resource, id, variables }) => {
+    console.log(`Updating ${resource}/${id}:`, variables);
+    
     // Get current data for comparison
     let previousData = null;
     try {
@@ -142,12 +177,16 @@ export const customDataProvider: DataProvider = {
     }
     
     // Log update activity
-    activityLogService.logUpdate(
-      getActivityResource(resource),
-      id.toString(),
-      variables,
-      previousData
-    );
+    try {
+      activityLogService.logUpdate(
+        getActivityResource(resource),
+        id.toString(),
+        variables,
+        previousData
+      );
+    } catch (error) {
+      console.warn('Activity logging failed:', error);
+    }
     
     return {
       data: response.data,
@@ -155,6 +194,8 @@ export const customDataProvider: DataProvider = {
   },
 
   deleteOne: async ({ resource, id }) => {
+    console.log(`Deleting ${resource}/${id}`);
+    
     // Get data before deletion for logging
     let deletedData = null;
     try {
@@ -167,10 +208,14 @@ export const customDataProvider: DataProvider = {
     const response = await axiosInstance.delete(`/${resource}/${id}`);
     
     // Log delete activity
-    activityLogService.logDelete(getActivityResource(resource), id.toString(), {
-      deletedData,
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      activityLogService.logDelete(getActivityResource(resource), id.toString(), {
+        deletedData,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.warn('Activity logging failed:', error);
+    }
     
     return {
       data: response.data,
@@ -205,15 +250,20 @@ export const customDataProvider: DataProvider = {
   },
 
   createMany: async ({ resource, variables }) => {
+    console.log(`Creating many ${resource}:`, variables);
     const response = await Promise.all(
       variables.map((item) => axiosInstance.post(`/${resource}`, item))
     );
     
     // Log bulk create activity
-    activityLogService.logCreate(getActivityResource(resource), 'bulk', {
-      count: variables.length,
-      ids: response.map((res) => res.data.id),
-    });
+    try {
+      activityLogService.logCreate(getActivityResource(resource), 'bulk', {
+        count: variables.length,
+        ids: response.map((res) => res.data.id),
+      });
+    } catch (error) {
+      console.warn('Activity logging failed:', error);
+    }
     
     return {
       data: response.map((res) => res.data),
@@ -221,15 +271,20 @@ export const customDataProvider: DataProvider = {
   },
 
   deleteMany: async ({ resource, ids }) => {
+    console.log(`Deleting many ${resource}:`, ids);
     const response = await Promise.all(
       ids.map((id) => axiosInstance.delete(`/${resource}/${id}`))
     );
     
     // Log bulk delete activity
-    activityLogService.logDelete(getActivityResource(resource), 'bulk', {
-      count: ids.length,
-      ids,
-    });
+    try {
+      activityLogService.logDelete(getActivityResource(resource), 'bulk', {
+        count: ids.length,
+        ids,
+      });
+    } catch (error) {
+      console.warn('Activity logging failed:', error);
+    }
     
     return {
       data: response.map((res) => res.data),
@@ -237,15 +292,20 @@ export const customDataProvider: DataProvider = {
   },
 
   updateMany: async ({ resource, ids, variables }) => {
+    console.log(`Updating many ${resource}:`, { ids, variables });
     const response = await Promise.all(
       ids.map((id) => axiosInstance.put(`/${resource}/${id}`, variables))
     );
     
     // Log bulk update activity
-    activityLogService.logUpdate(getActivityResource(resource), 'bulk', variables, {
-      count: ids.length,
-      ids,
-    });
+    try {
+      activityLogService.logUpdate(getActivityResource(resource), 'bulk', variables, {
+        count: ids.length,
+        ids,
+      });
+    } catch (error) {
+      console.warn('Activity logging failed:', error);
+    }
     
     return {
       data: response.map((res) => res.data),
@@ -253,6 +313,7 @@ export const customDataProvider: DataProvider = {
   },
 
   custom: async ({ url, method, payload, query, headers }) => {
+    console.log(`Custom request: ${method} ${url}`);
     try {
       const response = await axiosInstance({
         url,
@@ -264,10 +325,9 @@ export const customDataProvider: DataProvider = {
       return { data: response.data };
     } catch (error) {
       console.error('Custom request failed:', error);
-      // It's better to throw the error so that useMutation can handle it
       throw error;
     }
   },
 
-  getApiUrl: () => API_URL || window.location.origin,
+  getApiUrl: () => FULL_API_URL,
 };

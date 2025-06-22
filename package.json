@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "serve -s dist -l tcp://0.0.0.0:3000 --no-clipboard"
+    "start": "serve -s dist -l tcp://0.0.0.0:3000 --no-clipboard",
+    "build:prod": "vite build --mode production",
+    "deploy:easypanel": "powershell -ExecutionPolicy Bypass -File .\\deploy-easypanel-fixed.ps1",
+    "test:connectivity": "powershell -ExecutionPolicy Bypass -File .\\test-easypanel-connectivity.ps1",
+    "fix:all": "powershell -ExecutionPolicy Bypass -File .\\fix-all-issues.bat"
   },
   "dependencies": {
     "@ant-design/charts": "^2.4.0",
