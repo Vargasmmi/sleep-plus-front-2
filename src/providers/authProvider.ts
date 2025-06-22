@@ -1,11 +1,11 @@
 import { AuthProvider } from "@refinedev/core";
 import { activityLogService } from "../services/activityLogService";
-import { API_URL } from "../config/constants"; // Usar constants en lugar de env
+import { API_URL } from "../config/api"; // Usar la nueva configuración
 
 // No agregamos /api porque json-server no lo usa
 const FULL_API_URL = API_URL;
 
-console.log('🔧 Auth Provider API URL:', FULL_API_URL);
+console.log('🔧 Auth Provider initialized with API URL:', FULL_API_URL);
 
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {

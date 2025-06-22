@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login - Sleep Plus</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid #dee2e6;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #007bff;
+            background: #f8f9fa;
+        }
+        #logs {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test de Login - Sleep Plus Admin</h1>
+        
+        <div id="status" class="status info">
+            Esperando para iniciar el test...
+        </div>
+        
+        <button onclick="runTest()">🚀 Ejecutar Test de Login</button>
+        <button onclick="clearLogs()">🗑️ Limpiar Logs</button>
+        
+        <h2>📋 Configuración Detectada:</h2>
+        <pre id="config">Cargando...</pre>
+        
+        <h2>📡 Logs de Red:</h2>
+        <div id="logs"></div>
+        
+        <h2>💡 Instrucciones:</h2>
+        <ol>
+            <li>Abre este archivo en tu navegador</li>
+            <li>Haz clic en "Ejecutar Test de Login"</li>
+            <li>Observa los logs para ver a qué URL se hace la petición</li>
+            <li>Si la petición va al frontend, el problema persiste</li>
+            <li>Si la petición va al backend, el problema está resuelto</li>
+        </ol>
+    </div>
+
+    <script>
+        let logCount = 0;
+        
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.style.borderColor = type === 'error' ? '#dc3545' : 
+                                     type === 'success' ? '#28a745' : '#007bff';
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsDiv.appendChild(entry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            logCount++;
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            logCount = 0;
+            updateStatus('Logs limpiados', 'info');
+        }
+        
+        async function runTest() {
+            clearLogs();
+            updateStatus('🔄 Iniciando test...', 'info');
+            
+            // Configuración
+            const frontendUrl = 'https://sleep-plus-front-2-frontend.dqyvuv.easypanel.host';
+            const backendUrl = 'https://sleep-plus-front-2-backend.dqyvuv.easypanel.host';
+            const testEmployeeId = 'admin-001';
+            
+            // Mostrar configuración
+            document.getElementById('config').textContent = JSON.stringify({
+                frontendUrl,
+                backendUrl,
+                testEmployeeId,
+                userAgent: navigator.userAgent
+            }, null, 2);
+            
+            log('🚀 Iniciando test de login');
+            
+            try {
+                // Test 1: Verificar backend directamente
+                log('📡 Test 1: Verificando backend directamente...');
+                const backendResponse = await fetch(`${backendUrl}/employees/${testEmployeeId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (backendResponse.ok) {
+                    const data = await backendResponse.json();
+                    log(`✅ Backend respondió correctamente: ${data.email}`, 'success');
+                } else {
+                    log(`❌ Error en backend: ${backendResponse.status}`, 'error');
+                }
+                
+                // Test 2: Simular petición desde frontend
+                log('📡 Test 2: Simulando petición desde el frontend...');
+                const frontendSimResponse = await fetch(`${backendUrl}/employees/${testEmployeeId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Origin': frontendUrl,
+                        'Referer': `${frontendUrl}/login`
+                    },
+                    mode: 'cors',
+                    credentials: 'include'
+                });
+                
+                if (frontendSimResponse.ok) {
+                    log('✅ CORS está configurado correctamente', 'success');
+                } else {
+                    log(`❌ Problema con CORS: ${frontendSimResponse.status}`, 'error');
+                }
+                
+                // Test 3: Verificar si el frontend intenta usar su propia URL
+                log('📡 Test 3: Verificando configuración del frontend...');
+                
+                // Intentar cargar el JS del frontend y buscar la configuración
+                const htmlResponse = await fetch(frontendUrl);
+                const html = await htmlResponse.text();
+                
+                // Buscar el script principal
+                const scriptMatch = html.match(/src="(\/assets\/index-[^"]+\.js)"/);
+                if (scriptMatch) {
+                    const scriptUrl = `${frontendUrl}${scriptMatch[1]}`;
+                    log(`📜 Script principal encontrado: ${scriptUrl}`);
+                    
+                    // Verificar si contiene la URL del backend
+                    const scriptResponse = await fetch(scriptUrl);
+                    const scriptContent = await scriptResponse.text();
+                    
+                    if (scriptContent.includes('sleep-plus-front-2-backend.dqyvuv.easypanel.host')) {
+                        log('✅ El frontend tiene la URL del backend configurada', 'success');
+                        updateStatus('✅ La configuración parece correcta', 'success');
+                    } else {
+                        log('❌ El frontend NO tiene la URL del backend', 'error');
+                        updateStatus('❌ El frontend no está usando la URL del backend', 'error');
+                    }
+                } else {
+                    log('⚠️ No se pudo encontrar el script principal', 'error');
+                }
+                
+                // Resumen
+                log('📊 Test completado');
+                log(`Total de verificaciones: ${logCount - 1}`);
+                
+            } catch (error) {
+                log(`❌ Error durante el test: ${error.message}`, 'error');
+                updateStatus('❌ Error durante el test', 'error');
+                console.error('Error completo:', error);
+            }
+        }
+        
+        // Ejecutar test automáticamente al cargar
+        window.addEventListener('load', () => {
+            updateStatus('✅ Página cargada. Haz clic en "Ejecutar Test" para comenzar.', 'success');
+        });
+    </script>
+</body>
+</html>
