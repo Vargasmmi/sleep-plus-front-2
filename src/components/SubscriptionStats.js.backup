@@ -1,0 +1,54 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState, useEffect } from 'react';
+import { Card, Row, Col, Statistic, Progress, Tag, Button, Space, Spin, Typography } from 'antd';
+import { CreditCardOutlined, UserOutlined, DollarOutlined, TrendingUpOutlined, PauseCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, LinkOutlined, SyncOutlined } from '@ant-design/icons';
+import subscriptionService from '../services/subscriptionService';
+import stripeService from '../services/stripeService';
+const { Title, Text } = Typography;
+const SubscriptionStats = () => {
+    const [subscriptionStats, setSubscriptionStats] = useState(null);
+    const [stripeStats, setStripeStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const loadStats = async () => {
+        setLoading(true);
+        try {
+            const [subStats, stripStats] = await Promise.all([
+                subscriptionService.getSubscriptionStats(),
+                stripeService.getStats()
+            ]);
+            setSubscriptionStats(subStats);
+            setStripeStats(stripStats.stats);
+        }
+        catch (error) {
+            console.error('Error cargando estadísticas:', error);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        loadStats();
+    }, []);
+    const handleSync = async () => {
+        try {
+            await subscriptionService.syncWithStripe();
+            await loadStats(); // Recargar estadísticas después de sync
+        }
+        catch (error) {
+            console.error('Error sincronizando:', error);
+        }
+    };
+    if (loading) {
+        return (_jsx(Card, { children: _jsxs("div", { style: { textAlign: 'center', padding: '40px' }, children: [_jsx(Spin, { size: "large" }), _jsx(Text, { style: { display: 'block', marginTop: '16px' }, children: "Cargando estad\u00EDsticas..." })] }) }));
+    }
+    const totalRevenue = (subscriptionStats?.revenue.monthly || 0) + (subscriptionStats?.revenue.annual || 0);
+    const stripeIntegrationRate = subscriptionStats ?
+        Math.round((subscriptionStats.withStripe / subscriptionStats.total) * 100) : 0;
+    return (_jsxs("div", { children: [_jsxs("div", { style: { marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }, children: [_jsx(Title, { level: 3, children: "\uD83D\uDCCA Dashboard de Suscripciones & Stripe" }), _jsx(Button, { type: "primary", icon: _jsx(SyncOutlined, {}), onClick: handleSync, children: "Sincronizar con Stripe" })] }), _jsxs(Row, { gutter: [16, 16], style: { marginBottom: '24px' }, children: [_jsx(Col, { xs: 24, sm: 12, md: 6, children: _jsx(Card, { children: _jsx(Statistic, { title: "Total Suscripciones", value: subscriptionStats?.total || 0, prefix: _jsx(UserOutlined, {}), valueStyle: { color: '#1890ff' } }) }) }), _jsx(Col, { xs: 24, sm: 12, md: 6, children: _jsx(Card, { children: _jsx(Statistic, { title: "Ingresos Mensuales", value: subscriptionStats?.revenue.monthly || 0, prefix: _jsx(DollarOutlined, {}), precision: 2, valueStyle: { color: '#52c41a' } }) }) }), _jsx(Col, { xs: 24, sm: 12, md: 6, children: _jsx(Card, { children: _jsx(Statistic, { title: "Ingresos Anuales", value: subscriptionStats?.revenue.annual || 0, prefix: _jsx(DollarOutlined, {}), precision: 2, valueStyle: { color: '#52c41a' } }) }) }), _jsx(Col, { xs: 24, sm: 12, md: 6, children: _jsx(Card, { children: _jsx(Statistic, { title: "Con Stripe", value: subscriptionStats?.withStripe || 0, suffix: `/ ${subscriptionStats?.total || 0}`, prefix: _jsx(CreditCardOutlined, {}), valueStyle: { color: '#722ed1' } }) }) })] }), _jsxs(Row, { gutter: [16, 16], style: { marginBottom: '24px' }, children: [_jsx(Col, { xs: 24, md: 12, children: _jsxs(Card, { title: "\uD83D\uDCC8 Estados de Suscripciones", extra: _jsx(UserOutlined, {}), children: [_jsxs(Row, { gutter: 16, children: [_jsxs(Col, { span: 12, children: [_jsx("div", { style: { marginBottom: '16px' }, children: _jsxs(Space, { children: [_jsx(CheckCircleOutlined, { style: { color: '#52c41a' } }), _jsx(Text, { children: "Activas:" }), _jsx(Tag, { color: "green", children: subscriptionStats?.active || 0 })] }) }), _jsx("div", { style: { marginBottom: '16px' }, children: _jsxs(Space, { children: [_jsx(PauseCircleOutlined, { style: { color: '#fa8c16' } }), _jsx(Text, { children: "Pausadas:" }), _jsx(Tag, { color: "orange", children: subscriptionStats?.paused || 0 })] }) })] }), _jsxs(Col, { span: 12, children: [_jsx("div", { style: { marginBottom: '16px' }, children: _jsxs(Space, { children: [_jsx(CloseCircleOutlined, { style: { color: '#ff4d4f' } }), _jsx(Text, { children: "Canceladas:" }), _jsx(Tag, { color: "red", children: subscriptionStats?.cancelled || 0 })] }) }), _jsx("div", { style: { marginBottom: '16px' }, children: _jsxs(Space, { children: [_jsx(LinkOutlined, { style: { color: '#722ed1' } }), _jsx(Text, { children: "Stripe:" }), _jsx(Tag, { color: "purple", children: subscriptionStats?.withStripe || 0 })] }) })] })] }), _jsxs("div", { style: { marginTop: '16px' }, children: [_jsx(Text, { type: "secondary", children: "Integraci\u00F3n con Stripe" }), _jsx(Progress, { percent: stripeIntegrationRate, strokeColor: "#722ed1", format: percent => `${percent}%` })] })] }) }), _jsx(Col, { xs: 24, md: 12, children: _jsxs(Card, { title: "\uD83D\uDCB3 Estad\u00EDsticas de Stripe", extra: _jsx(CreditCardOutlined, {}), children: [_jsxs(Row, { gutter: 16, children: [_jsx(Col, { span: 12, children: _jsxs("div", { style: { marginBottom: '12px' }, children: [_jsx(Text, { type: "secondary", children: "Payment Links" }), _jsxs("div", { children: [_jsx(Text, { strong: true, children: stripeStats?.paymentLinks.total || 0 }), _jsx(Text, { type: "secondary", children: " total" })] }), _jsxs("div", { children: [_jsxs(Tag, { color: "green", size: "small", children: [stripeStats?.paymentLinks.active || 0, " activos"] }), _jsxs(Tag, { color: "blue", size: "small", children: [stripeStats?.paymentLinks.completed || 0, " completados"] })] })] }) }), _jsx(Col, { span: 12, children: _jsxs("div", { style: { marginBottom: '12px' }, children: [_jsx(Text, { type: "secondary", children: "Suscripciones Stripe" }), _jsxs("div", { children: [_jsx(Text, { strong: true, children: stripeStats?.subscriptions.total || 0 }), _jsx(Text, { type: "secondary", children: " total" })] }), _jsxs("div", { children: [_jsxs(Tag, { color: "green", size: "small", children: [stripeStats?.subscriptions.active || 0, " activas"] }), _jsxs(Tag, { color: "red", size: "small", children: [stripeStats?.subscriptions.canceled || 0, " canceladas"] })] })] }) })] }), _jsxs("div", { style: { marginTop: '16px', padding: '12px', background: '#fafafa', borderRadius: '6px' }, children: [_jsx(Text, { type: "secondary", children: "Webhooks" }), _jsxs("div", { children: [_jsx(Text, { children: stripeStats?.webhooks.processed || 0 }), _jsxs(Text, { type: "secondary", children: [" / ", stripeStats?.webhooks.total || 0, " procesados"] })] }), _jsx("div", { children: _jsxs(Tag, { color: "blue", size: "small", children: [stripeStats?.webhooks.today || 0, " hoy"] }) })] })] }) })] }), _jsx(Row, { gutter: [16, 16], children: _jsx(Col, { span: 24, children: _jsx(Card, { title: "\uD83D\uDCB0 Resumen Financiero", extra: _jsx(TrendingUpOutlined, {}), children: _jsxs(Row, { gutter: 32, children: [_jsx(Col, { xs: 24, sm: 8, children: _jsx(Statistic, { title: "Ingresos Totales", value: totalRevenue, precision: 2, prefix: "$", valueStyle: { color: '#52c41a', fontSize: '24px' } }) }), _jsx(Col, { xs: 24, sm: 8, children: _jsx(Statistic, { title: "Ingreso Promedio por Suscripci\u00F3n", value: subscriptionStats?.total ? totalRevenue / subscriptionStats.total : 0, precision: 2, prefix: "$", valueStyle: { color: '#1890ff' } }) }), _jsx(Col, { xs: 24, sm: 8, children: _jsx(Statistic, { title: "Tasa de Retenci\u00F3n", value: subscriptionStats?.total ?
+                                            Math.round((subscriptionStats.active / subscriptionStats.total) * 100) : 0, suffix: "%", valueStyle: {
+                                            color: subscriptionStats?.total &&
+                                                (subscriptionStats.active / subscriptionStats.total) > 0.8 ?
+                                                '#52c41a' : '#fa8c16'
+                                        } }) })] }) }) }) })] }));
+};
+export default SubscriptionStats;

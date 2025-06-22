@@ -1,0 +1,103 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useState, useEffect } from 'react';
+import { Row, Col, Card, Button, Space, Typography, Tabs, Alert, Statistic } from 'antd';
+import { SettingOutlined, LinkOutlined, DollarOutlined, CreditCardOutlined } from '@ant-design/icons';
+import { StripeConfigForm, PaymentLinkGenerator, PaymentLinksList } from '../components/stripe';
+import stripeService from '../services/stripeService';
+const { Title, Paragraph } = Typography;
+const StripeManagement = () => {
+    const [showPaymentLinkModal, setShowPaymentLinkModal] = useState(false);
+    const [configured, setConfigured] = useState(false);
+    const [stats, setStats] = useState(null);
+    const [, setLoading] = useState(true);
+    useEffect(() => {
+        loadStripeStatus();
+    }, []);
+    const loadStripeStatus = async () => {
+        try {
+            setLoading(true);
+            // Verificar configuración
+            const configResponse = await stripeService.getConfig();
+            setConfigured(configResponse.success && configResponse.configured);
+            // Cargar estadísticas si está configurado
+            if (configResponse.success && configResponse.configured) {
+                try {
+                    const statsResponse = await stripeService.getStats();
+                    if (statsResponse.success) {
+                        setStats(statsResponse.stats);
+                    }
+                }
+                catch (error) {
+                    // Si hay error en stats, usar valores por defecto
+                    setStats({
+                        paymentLinks: { total: 0, active: 0, completed: 0 },
+                        subscriptions: { total: 0, active: 0, canceled: 0 },
+                        webhooks: { total: 0, processed: 0, pending: 0, today: 0 }
+                    });
+                }
+            }
+        }
+        catch (error) {
+            console.error('Error cargando estado de Stripe:', error);
+            setConfigured(false);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    const statsData = stats ? [
+        {
+            title: 'Payment Links Activos',
+            value: stats.paymentLinks.active,
+            prefix: _jsx(LinkOutlined, {}),
+            suffix: null,
+        },
+        {
+            title: 'Payment Links Total',
+            value: stats.paymentLinks.total,
+            prefix: _jsx(CreditCardOutlined, {}),
+            suffix: null,
+        },
+        {
+            title: 'Webhooks Procesados',
+            value: stats.webhooks.processed,
+            prefix: _jsx(DollarOutlined, {}),
+            suffix: null,
+        },
+    ] : [
+        {
+            title: 'Payment Links Activos',
+            value: 0,
+            prefix: _jsx(LinkOutlined, {}),
+            suffix: null,
+        },
+        {
+            title: 'Payment Links Total',
+            value: 0,
+            prefix: _jsx(CreditCardOutlined, {}),
+            suffix: null,
+        },
+        {
+            title: 'Webhooks Procesados',
+            value: 0,
+            prefix: _jsx(DollarOutlined, {}),
+            suffix: null,
+        },
+    ];
+    return (_jsxs("div", { style: { padding: '24px' }, children: [_jsxs("div", { style: { marginBottom: '24px' }, children: [_jsx(Title, { level: 2, children: "Gesti\u00F3n de Stripe" }), _jsx(Paragraph, { children: "Administra los pagos, suscripciones y enlaces de pago de Stripe desde un solo lugar." })] }), !configured && (_jsx(Alert, { message: "Configuraci\u00F3n Requerida", description: "Para usar las funcionalidades de Stripe, primero debes configurar tus credenciales en la pesta\u00F1a de Configuraci\u00F3n.", type: "warning", showIcon: true, closable: true, style: { marginBottom: '24px' } })), _jsx(Row, { gutter: [16, 16], style: { marginBottom: '24px' }, children: statsData.map((stat, index) => (_jsx(Col, { xs: 24, sm: 8, children: _jsx(Card, { children: _jsx(Statistic, { title: stat.title, value: stat.value, prefix: stat.prefix, suffix: stat.suffix, precision: stat.title.includes('Total') ? 2 : 0 }) }) }, index))) }), _jsx(Tabs, { defaultActiveKey: "payment-links", items: [
+                    {
+                        key: 'payment-links',
+                        label: (_jsxs(Space, { children: [_jsx(LinkOutlined, {}), "Payment Links"] })),
+                        children: (_jsxs(_Fragment, { children: [_jsx("div", { style: { marginBottom: '16px' }, children: _jsx(Space, { children: _jsx(Button, { type: "primary", icon: _jsx(LinkOutlined, {}), onClick: () => setShowPaymentLinkModal(true), disabled: !configured, children: "Crear Payment Link" }) }) }), _jsx(PaymentLinksList, {}), _jsx(PaymentLinkGenerator, { visible: showPaymentLinkModal, onClose: () => setShowPaymentLinkModal(false) })] }))
+                    },
+                    {
+                        key: 'configuration',
+                        label: (_jsxs(Space, { children: [_jsx(SettingOutlined, {}), "Configuraci\u00F3n"] })),
+                        children: (_jsx(StripeConfigForm, { onConfigSaved: () => {
+                                setConfigured(true);
+                                loadStripeStatus();
+                            } }))
+                    }
+                ] })] }));
+};
+export default StripeManagement;

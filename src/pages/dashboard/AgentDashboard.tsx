@@ -1,259 +1,348 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useList } from "@refinedev/core";
-import { Row, Col, Card, Statistic, Progress, Space, Typography, Tag, Table, Button } from "antd";
+import { Row, Col, Card, Statistic, Progress, Space, Typography, Tag, Alert, Button, List, Avatar, Badge } from "antd";
 import {
   PhoneOutlined,
-  TrophyOutlined,
   CheckCircleOutlined,
+  ClockCircleOutlined,
+  ExclamationCircleOutlined,
+  TrophyOutlined,
   FireOutlined,
+  RiseOutlined,
   UserOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
-import { Column, Gauge } from "@ant-design/charts";
+import { Line, Column, Gauge } from "@ant-design/charts";
 import dayjs from "dayjs";
-import { Employee, Sale, Customer } from "../../interfaces";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { IDailyGoal, IEmployee, ICallTask, ICustomer } from "../../interfaces";
 
-const { Title, Text } = Typography;
+dayjs.extend(relativeTime);
+
+const { Title, Text, Paragraph } = Typography;
 
 interface AgentDashboardProps {
-  user: Employee;
+  user: IEmployee;
 }
 
 export const AgentDashboard: React.FC<AgentDashboardProps> = ({ user }) => {
-  // Fetch agent's sales
-  const { data: salesData } = useList<Sale>({
-    resource: "sales",
-    filters: [{ field: "employeeId", operator: "eq", value: user.id }],
-    sorters: [{ field: "createdAt", order: "desc" }],
-    pagination: { pageSize: 100 },
+  const [currentTime, setCurrentTime] = useState(dayjs());
+
+  // Fetch today's goal
+  const { data: goalsData, isLoading: goalsLoading } = useList<IDailyGoal>({
+    resource: "dailyGoals",
+    filters: [
+      { field: "employeeId", operator: "eq", value: user.id },
+      { field: "date", operator: "eq", value: dayjs().format("YYYY-MM-DD") }
+    ],
   });
 
-  // Fetch agent's customers
-  const { data: customersData } = useList<Customer>({
-    resource: "customers",
-    filters: [{ field: "assignedAgentId", operator: "eq", value: user.id }],
+  // Fetch pending tasks
+  const { data: tasksData, isLoading: tasksLoading } = useList<ICallTask>({
+    resource: "callTasks",
+    filters: [
+      { field: "employeeId", operator: "eq", value: user.id },
+      { field: "status", operator: "eq", value: "pending" }
+    ],
   });
 
-  const sales = salesData?.data || [];
-  const customers = customersData?.data || [];
+  // Fetch other employees' performance for competition
+  const { data: employeesData } = useList<IEmployee>({
+    resource: "employees",
+    filters: [
+      { field: "role", operator: "eq", value: "agent" },
+      { field: "storeId", operator: "eq", value: user.storeId }
+    ],
+  });
 
-  // Calculate agent statistics
-  const agentStats = {
-    totalSales: sales.length,
-    totalRevenue: sales.reduce((sum, sale) => sum + sale.amount, 0),
-    callsToday: user.performance?.callsToday || 0,
-    conversionsToday: user.performance?.conversionsToday || 0,
-    conversionRate: user.performance?.conversionRate || 0,
-    averageSale: sales.length > 0 ? sales.reduce((sum, s) => sum + s.amount, 0) / sales.length : 0,
-    customersAssigned: customers.length,
+  // Update current time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(dayjs());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const todayGoal = goalsData?.data?.[0];
+  const pendingTasks = tasksData?.data || [];
+
+  // Calculate progress
+  const progress = todayGoal ? (todayGoal.completedCalls / todayGoal.targetCalls) * 100 : 0;
+  const isOverdue = todayGoal?.status === 'overdue';
+
+  // Mock data for call performance chart
+  const callPerformanceData = [
+    { hour: '9:00', calls: 3 },
+    { hour: '10:00', calls: 5 },
+    { hour: '11:00', calls: 4 },
+    { hour: '12:00', calls: 2 },
+    { hour: '13:00', calls: 0 },
+    { hour: '14:00', calls: 4 },
+    { hour: '15:00', calls: 3 },
+    { hour: '16:00', calls: 2 },
+  ];
+
+  const callPerformanceConfig = {
+    data: callPerformanceData,
+    xField: 'hour',
+    yField: 'calls',
+    smooth: true,
+    point: {
+      size: 5,
+      shape: 'circle',
+    },
+    label: {
+      style: {
+        fill: '#aaa',
+      },
+    },
   };
 
-  // Today's performance
-  const todaySales = sales.filter(sale => 
-    dayjs(sale.createdAt).isSame(dayjs(), 'day')
-  );
-
-  // Weekly performance
-  const weeklySales = Array.from({ length: 7 }, (_, i) => {
-    const date = dayjs().subtract(6 - i, 'days');
-    const daySales = sales.filter(s => dayjs(s.createdAt).isSame(date, 'day'));
-    return {
-      date: date.format('ddd'),
-      sales: daySales.length,
-      revenue: daySales.reduce((sum, s) => sum + s.amount, 0),
-    };
-  });
+  const gaugeConfig = {
+    percent: progress / 100,
+    range: {
+      color: progress >= 100 ? '#52c41a' : progress >= 80 ? '#faad14' : '#ff4d4f',
+    },
+    indicator: {
+      pointer: {
+        style: {
+          stroke: '#D0D0D0',
+        },
+      },
+      pin: {
+        style: {
+          stroke: '#D0D0D0',
+        },
+      },
+    },
+    statistic: {
+      content: {
+        style: {
+          fontSize: '36px',
+          lineHeight: '36px',
+        },
+        formatter: () => `${todayGoal?.completedCalls || 0}/${todayGoal?.targetCalls || 25}`,
+      },
+    },
+  };
 
   return (
     <div style={{ padding: 24 }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
-          <Title level={2}>Dashboard de Agente</Title>
-          <Text type="secondary">Bienvenido, {user.firstName} {user.lastName}</Text>
+          <Title level={2}>¡Hola, {user.firstName}! 👋</Title>
+          <Text type="secondary">{currentTime.format('dddd, D [de] MMMM [de] YYYY')}</Text>
         </Col>
         <Col>
           <Space>
-            <Button icon={<TrophyOutlined />} onClick={() => window.location.href = '/leaderboard'}>
-              Ver Posición
-            </Button>
-            <Button icon={<UserOutlined />} onClick={() => window.location.href = '/customers'}>
-              Mis Clientes
-            </Button>
+            <Badge status={user.status === 'active' ? 'success' : 'default'} />
+            <Text>{user.status === 'active' ? 'En línea' : 'Desconectado'}</Text>
           </Space>
         </Col>
       </Row>
 
-      {/* Agent KPIs */}
+      {/* Daily Goal Status */}
+      {isOverdue && (
+        <Alert
+          message="¡Meta diaria pendiente!"
+          description="No completaste tu meta de ayer. Completa las llamadas pendientes para recibir nuevos clientes."
+          type="warning"
+          showIcon
+          icon={<ExclamationCircleOutlined />}
+          style={{ marginBottom: 16 }}
+          action={
+            <Button size="small" type="primary">
+              Ver tareas pendientes
+            </Button>
+          }
+        />
+      )}
+
+      {/* Main Stats */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Ventas Hoy"
-              value={todaySales.length}
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#3f8600' }}
-            />
-            <Text type="secondary">
-              ${todaySales.reduce((sum, s) => sum + s.amount, 0).toFixed(2)} en ingresos
-            </Text>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
               title="Llamadas Hoy"
-              value={agentStats.callsToday}
+              value={todayGoal?.completedCalls || 0}
+              suffix={`/ ${todayGoal?.targetCalls || 25}`}
               prefix={<PhoneOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-            <Text type="secondary">
-              {agentStats.conversionsToday} conversiones
-            </Text>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Tasa de Conversión"
-              value={agentStats.conversionRate * 100}
-              precision={1}
-              prefix={<FireOutlined />}
-              suffix="%"
-              valueStyle={{ color: '#722ed1' }}
+              valueStyle={{ color: progress >= 100 ? '#3f8600' : '#000' }}
             />
             <Progress 
-              percent={agentStats.conversionRate * 100} 
-              showInfo={false} 
-              strokeColor="#722ed1" 
+              percent={progress} 
+              status={progress >= 100 ? 'success' : 'active'}
+              strokeColor={isOverdue ? '#ff4d4f' : undefined}
             />
+            {progress >= 100 ? (
+              <Text type="success">¡Meta completada! 🎉</Text>
+            ) : (
+              <Text type="secondary">Faltan {(todayGoal?.targetCalls || 25) - (todayGoal?.completedCalls || 0)} llamadas</Text>
+            )}
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Clientes Asignados"
-              value={agentStats.customersAssigned}
-              prefix={<UserOutlined />}
-              valueStyle={{ color: '#fa8c16' }}
+              title="Conversiones Hoy"
+              value={user.performance?.conversionsToday || 0}
+              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: '#52c41a' }}
             />
-            <Text type="secondary">
-              Promedio venta: ${agentStats.averageSale.toFixed(2)}
-            </Text>
+            <Text type="secondary">Tasa: {user.performance?.conversionRate || 0}%</Text>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="Comisión del Mes"
+              value={user.commissions?.currentMonthCommission || 0}
+              prefix={<DollarOutlined />}
+              precision={2}
+              valueStyle={{ color: '#1890ff' }}
+            />
+            <Space>
+              <RiseOutlined style={{ color: '#52c41a' }} />
+              <Text type="success">+15% vs mes anterior</Text>
+            </Space>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="Mi Ranking"
+              value={3}
+              suffix="/ 10"
+              prefix={<TrophyOutlined />}
+              valueStyle={{ color: '#faad14' }}
+            />
+            <Text type="secondary">Top 30% del equipo</Text>
           </Card>
         </Col>
       </Row>
 
-      {/* Performance Charts */}
+      {/* Progress and Tasks */}
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-        <Col xs={24} lg={12}>
-          <Card title="Rendimiento Semanal">
-            <Column
-              data={weeklySales}
-              xField="date"
-              yField="sales"
-              seriesField="type"
-              isGroup={true}
-              columnStyle={{
-                radius: [20, 20, 0, 0],
-              }}
-            />
+        <Col xs={24} lg={8}>
+          <Card title="Mi Progreso Diario" extra={<Tag color={progress >= 100 ? 'success' : 'processing'}>En progreso</Tag>}>
+            <Gauge {...gaugeConfig} height={200} />
+            <Paragraph style={{ textAlign: 'center', marginTop: 16 }}>
+              {progress >= 100 
+                ? "¡Excelente trabajo! Has completado tu meta diaria 🎯"
+                : `Mantén el ritmo, vas muy bien. ¡Tú puedes! 💪`
+              }
+            </Paragraph>
           </Card>
         </Col>
 
-        <Col xs={24} lg={12}>
-          <Card title="Objetivo de Conversión">
-            <Gauge
-              percent={agentStats.conversionRate}
-              range={{
-                color: ['l(0) 0:#B8E1FF 1:#3D76DD'],
-              }}
-              startAngle={Math.PI}
-              endAngle={2 * Math.PI}
-              indicator={{
-                pointer: {
-                  style: {
-                    stroke: '#D0D0D0',
-                  },
-                },
-                pin: {
-                  style: {
-                    stroke: '#D0D0D0',
-                  },
-                },
-              }}
-              statistic={{
-                title: {
-                  offsetY: -36,
-                  style: {
-                    fontSize: '36px',
-                    color: '#4B535E',
-                },
-                formatter: () => '70%',
-              },
-              content: {
-                style: {
-                  fontSize: '24px',
-                  lineHeight: '44px',
-                  color: '#4B535E',
-                },
-                formatter: () => `${(agentStats.conversionRate * 100).toFixed(1)}%`,
-              },
-            }}
-          />
-        </Card>
+        <Col xs={24} lg={8}>
+          <Card 
+            title="Clientes Pendientes" 
+            extra={<Badge count={pendingTasks.length} />}
+            bodyStyle={{ height: 300, overflow: 'auto' }}
+          >
+            <List
+              dataSource={pendingTasks.slice(0, 5)}
+              renderItem={(task) => (
+                <List.Item
+                  actions={[
+                    <Button type="link" size="small">Llamar</Button>
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={<Avatar icon={<UserOutlined />} />}
+                    title={`Cliente #${task.customerId}`}
+                    description={
+                      <Space direction="vertical" size={0}>
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                          Asignado {dayjs(task.assignedAt).fromNow()}
+                        </Text>
+                      </Space>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+            {pendingTasks.length > 5 && (
+              <div style={{ textAlign: 'center', marginTop: 8 }}>
+                <Button type="link">Ver todos ({pendingTasks.length})</Button>
+              </div>
+            )}
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={8}>
+          <Card title="Ranking del Equipo Hoy" extra={<FireOutlined style={{ color: '#ff4d4f' }} />}>
+            <List
+              dataSource={employeesData?.data?.slice(0, 5) || []}
+              renderItem={(employee, index) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar 
+                        style={{ 
+                          backgroundColor: index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#f0f0f0' 
+                        }}
+                      >
+                        {index + 1}
+                      </Avatar>
+                    }
+                    title={
+                      <Space>
+                        <Text strong={employee.id === user.id}>
+                          {employee.firstName} {employee.lastName}
+                        </Text>
+                        {employee.id === user.id && <Tag color="blue">Tú</Tag>}
+                      </Space>
+                    }
+                    description={
+                      <Space>
+                        <Text>{employee.performance?.callsToday || 0} llamadas</Text>
+                        <Text type="secondary">•</Text>
+                        <Text type="success">{employee.performance?.conversionsToday || 0} ventas</Text>
+                      </Space>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+          </Card>
         </Col>
       </Row>
 
-      {/* Recent Sales */}
+      {/* Performance Chart */}
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col xs={24}>
-          <Card title="Ventas Recientes">
-            <Table
-              dataSource={sales.slice(0, 10)}
-              columns={[
-                {
-                  title: 'Cliente',
-                  dataIndex: 'customerId',
-                  key: 'customerId',
-                  render: (customerId) => {
-                    const customer = customers.find(c => c.id === customerId);
-                    return customer ? `${customer.firstName} ${customer.lastName}` : customerId;
-                  }
-                },
-                {
-                  title: 'Monto',
-                  dataIndex: 'amount',
-                  key: 'amount',
-                  render: (amount) => `$${amount.toFixed(2)}`
-                },
-                {
-                  title: 'Estado',
-                  dataIndex: 'status',
-                  key: 'status',
-                  render: (status) => (
-                    <Tag color={
-                      status === 'completed' ? 'green' :
-                      status === 'pending' ? 'orange' : 'red'
-                    }>
-                      {status}
-                    </Tag>
-                  )
-                },
-                {
-                  title: 'Fecha',
-                  dataIndex: 'createdAt',
-                  key: 'createdAt',
-                  render: (date) => dayjs(date).format('MM/DD/YYYY HH:mm')
-                }
-              ]}
-              pagination={false}
-              size="small"
-            />
+          <Card title="Mi Rendimiento por Hora">
+            <Line {...callPerformanceConfig} height={300} />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Quick Actions */}
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+        <Col xs={24}>
+          <Card title="Acciones Rápidas">
+            <Space wrap>
+              <Button type="primary" icon={<PhoneOutlined />} size="large">
+                Registrar Llamada
+              </Button>
+              <Button icon={<CheckCircleOutlined />} size="large">
+                Marcar Tarea Completada
+              </Button>
+              <Button icon={<UserOutlined />} size="large">
+                Ver Mis Clientes
+              </Button>
+              <Button icon={<TrophyOutlined />} size="large">
+                Ver Mis Logros
+              </Button>
+            </Space>
           </Card>
         </Col>
       </Row>
     </div>
   );
-}; 
+};

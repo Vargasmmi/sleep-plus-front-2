@@ -1,0 +1,38 @@
+// Tipos de acciones para el activity log
+export const ACTIVITY_ACTIONS = {
+    CREATE: 'create',
+    UPDATE: 'update',
+    DELETE: 'delete',
+    VIEW: 'view',
+    LOGIN: 'login',
+    LOGOUT: 'logout',
+    EXPORT: 'export',
+    IMPORT: 'import',
+    SYNC: 'sync',
+    APPROVE: 'approve',
+    REJECT: 'reject',
+    SEND_EMAIL: 'send_email',
+    MAKE_CALL: 'make_call',
+    CHANGE_STATUS: 'change_status'
+};
+// Tipos de recursos para el activity log
+export const ACTIVITY_RESOURCES = {
+    AUTH: 'auth',
+    CUSTOMERS: 'customers',
+    SUBSCRIPTIONS: 'subscriptions',
+    EVALUATIONS: 'evaluations',
+    EMPLOYEES: 'employees',
+    STORES: 'stores',
+    CALLS: 'calls',
+    SALES: 'sales',
+    CAMPAIGNS: 'campaigns',
+    COMMISSIONS: 'commissions',
+    ACHIEVEMENTS: 'achievements',
+    SCRIPTS: 'scripts',
+    SHOPIFY_SETTINGS: 'shopifySettings',
+    SHOPIFY_PRODUCTS: 'shopifyProducts',
+    SHOPIFY_CUSTOMERS: 'shopifyCustomers',
+    SHOPIFY_COUPONS: 'shopifyCoupons',
+    WEBHOOKS: 'webhooks',
+    REPORTS: 'reports'
+};

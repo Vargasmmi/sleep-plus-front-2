@@ -1,0 +1,209 @@
+import axios from 'axios';
+class WebhookService {
+    constructor() {
+        Object.defineProperty(this, "baseUrl", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: ''
+        });
+    }
+    /**
+     * Registra un webhook recibido
+     */
+    async registerWebhook(source, event, headers, payload) {
+        const webhook = {
+            source: source,
+            event,
+            status: 'pending',
+            receivedAt: new Date().toISOString(),
+            processedAt: null,
+            attempts: 0,
+            headers,
+            payload,
+            response: null,
+            error: null
+        };
+        const id = `wh-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const response = await axios.post(`${this.baseUrl}/webhooks`, {
+            ...webhook,
+            id
+        });
+        return response.data;
+    }
+    /**
+     * Actualiza el estado de un webhook
+     */
+    async updateWebhookStatus(webhookId, status, response, error) {
+        const webhook = await this.getWebhook(webhookId);
+        if (!webhook) {
+            throw new Error(`Webhook ${webhookId} not found`);
+        }
+        const updates = {
+            status,
+            processedAt: new Date().toISOString(),
+            attempts: webhook.attempts + 1
+        };
+        if (response) {
+            updates.response = response;
+        }
+        if (error) {
+            updates.error = {
+                code: error.code || 'UNKNOWN_ERROR',
+                message: error.message || 'Unknown error occurred',
+                timestamp: new Date().toISOString()
+            };
+        }
+        await axios.patch(`${this.baseUrl}/webhooks/${webhookId}`, updates);
+    }
+    /**
+     * Obtiene un webhook por ID
+     */
+    async getWebhook(id) {
+        try {
+            const response = await axios.get(`${this.baseUrl}/webhooks/${id}`);
+            return response.data;
+        }
+        catch (error) {
+            return null;
+        }
+    }
+    /**
+     * Obtiene la lista de webhooks
+     */
+    async getWebhooks(filters) {
+        try {
+            let url = `${this.baseUrl}/webhooks?_sort=receivedAt&_order=desc`;
+            if (filters?.source) {
+                url += `&source=${filters.source}`;
+            }
+            if (filters?.event) {
+                url += `&event=${filters.event}`;
+            }
+            if (filters?.status) {
+                url += `&status=${filters.status}`;
+            }
+            if (filters?.limit) {
+                url += `&_limit=${filters.limit}`;
+            }
+            const response = await axios.get(url);
+            let webhooks = response.data;
+            // Filtrar por fechas si es necesario
+            if (filters?.startDate || filters?.endDate) {
+                webhooks = webhooks.filter((webhook) => {
+                    const webhookDate = new Date(webhook.receivedAt);
+                    if (filters.startDate && webhookDate < new Date(filters.startDate))
+                        return false;
+                    if (filters.endDate && webhookDate > new Date(filters.endDate))
+                        return false;
+                    return true;
+                });
+            }
+            return webhooks;
+        }
+        catch (error) {
+            console.error('Error fetching webhooks:', error);
+            return [];
+        }
+    }
+    /**
+     * Obtiene los webhooks pendientes para procesar
+     */
+    async getPendingWebhooks() {
+        return this.getWebhooks({ status: 'pending' });
+    }
+    /**
+     * Obtiene los webhooks fallidos
+     */
+    async getFailedWebhooks() {
+        return this.getWebhooks({ status: 'failed' });
+    }
+    /**
+     * Reintenta procesar un webhook fallido
+     */
+    async retryWebhook(webhookId) {
+        await this.updateWebhookStatus(webhookId, 'retrying');
+        // La lógica de reprocesamiento se implementaría según el tipo de webhook
+    }
+    /**
+     * Obtiene la configuración de eventos de webhook
+     */
+    async getWebhookEvents(enabled) {
+        try {
+            let url = `${this.baseUrl}/webhookEvents`;
+            if (enabled !== undefined) {
+                url += `?enabled=${enabled}`;
+            }
+            const response = await axios.get(url);
+            return response.data;
+        }
+        catch (error) {
+            console.error('Error fetching webhook events:', error);
+            return [];
+        }
+    }
+    /**
+     * Actualiza la configuración de un evento de webhook
+     */
+    async updateWebhookEvent(eventId, updates) {
+        await axios.patch(`${this.baseUrl}/webhookEvents/${eventId}`, {
+            ...updates,
+            updatedAt: new Date().toISOString()
+        });
+    }
+    /**
+     * Habilita o deshabilita un evento de webhook
+     */
+    async toggleWebhookEvent(eventId, enabled) {
+        await this.updateWebhookEvent(eventId, { enabled });
+    }
+    /**
+     * Obtiene estadísticas de webhooks
+     */
+    async getWebhookStats(timeframe = 'day') {
+        const now = new Date();
+        let startDate = new Date();
+        switch (timeframe) {
+            case 'day':
+                startDate.setDate(now.getDate() - 1);
+                break;
+            case 'week':
+                startDate.setDate(now.getDate() - 7);
+                break;
+            case 'month':
+                startDate.setMonth(now.getMonth() - 1);
+                break;
+        }
+        const webhooks = await this.getWebhooks({
+            startDate: startDate.toISOString()
+        });
+        const stats = {
+            total: webhooks.length,
+            processed: 0,
+            failed: 0,
+            pending: 0,
+            byEvent: {},
+            bySource: {}
+        };
+        webhooks.forEach(webhook => {
+            // Contar por estado
+            switch (webhook.status) {
+                case 'processed':
+                    stats.processed++;
+                    break;
+                case 'failed':
+                    stats.failed++;
+                    break;
+                case 'pending':
+                    stats.pending++;
+                    break;
+            }
+            // Contar por evento
+            stats.byEvent[webhook.event] = (stats.byEvent[webhook.event] || 0) + 1;
+            // Contar por fuente
+            stats.bySource[webhook.source] = (stats.bySource[webhook.source] || 0) + 1;
+        });
+        return stats;
+    }
+}
+export const webhookService = new WebhookService();

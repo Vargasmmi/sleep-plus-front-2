@@ -18,6 +18,34 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: config.environment,
+    port: PORT,
+    host: config.host,
+    cors: config.cors.origin
+  });
+});
+
+// API info endpoint
+app.get('/api/info', (req, res) => {
+  res.json({
+    name: 'Sleep Plus Admin API',
+    version: '1.0.0',
+    environment: config.environment,
+    endpoints: {
+      health: '/health',
+      customers: '/customers',
+      employees: '/employees',
+      subscriptions: '/subscriptions',
+      shopify: '/api/shopify/*'
+    }
+  });
+});
+
 // Shopify proxy endpoints - DEBEN IR ANTES que json-server
 app.post('/api/shopify/test-connection', async (req, res) => {
   try {
@@ -150,6 +178,18 @@ app.post('/api/shopify/discount-codes/:priceRuleId', async (req, res) => {
 // JSON Server setup - AL FINAL para que no interfiera con las rutas de Shopify
 const router = jsonServer.router(path.join(__dirname, '..', 'db.json'));
 const middlewares = jsonServer.defaults();
+
+// Verificar que el archivo db.json existe
+const dbPath = path.join(__dirname, '..', 'db.json');
+console.log(`📁 Database path: ${dbPath}`);
+
+const fs = require('fs');
+if (!fs.existsSync(dbPath)) {
+  console.error(`❌ Database file not found at: ${dbPath}`);
+  process.exit(1);
+} else {
+  console.log(`✅ Database file found at: ${dbPath}`);
+}
 
 // Aplicar middlewares de json-server
 app.use(middlewares);

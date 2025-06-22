@@ -1,0 +1,22 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { Show, DateField } from "@refinedev/antd";
+import { Card, Descriptions, Space, Tag, Typography, Collapse, Badge, Alert } from "antd";
+import { InfoCircleOutlined, CodeOutlined, FileTextOutlined } from "@ant-design/icons";
+import { useShow } from "@refinedev/core";
+const { Text } = Typography;
+const { Panel } = Collapse;
+export const WebhookShow = () => {
+    const { queryResult } = useShow();
+    const { data, isLoading } = queryResult;
+    const record = data?.data;
+    const getStatusConfig = (status) => {
+        const configs = {
+            pending: { color: "processing", text: "Pendiente" },
+            processed: { color: "success", text: "Procesado" },
+            failed: { color: "error", text: "Fallido" },
+            retrying: { color: "warning", text: "Reintentando" },
+        };
+        return configs[status] || { color: "default", text: status };
+    };
+    return (_jsx(Show, { isLoading: isLoading, title: `Webhook: ${record?.event || ""}`, children: record && (_jsxs(_Fragment, { children: [_jsx(Card, { children: _jsxs(Descriptions, { column: 2, bordered: true, children: [_jsx(Descriptions.Item, { label: "ID", children: _jsx(Text, { code: true, children: record.id }) }), _jsx(Descriptions.Item, { label: "Estado", children: _jsx(Badge, { status: getStatusConfig(record.status).color, text: getStatusConfig(record.status).text }) }), _jsx(Descriptions.Item, { label: "Fuente", children: _jsx(Tag, { color: record.source === "shopify" ? "blue" : "default", children: record.source.toUpperCase() }) }), _jsx(Descriptions.Item, { label: "Evento", children: _jsx(Tag, { color: "blue", children: record.event }) }), _jsx(Descriptions.Item, { label: "Recibido", children: _jsx(DateField, { value: record.receivedAt, format: "DD/MM/YYYY HH:mm:ss" }) }), _jsx(Descriptions.Item, { label: "Procesado", children: record.processedAt ? (_jsx(DateField, { value: record.processedAt, format: "DD/MM/YYYY HH:mm:ss" })) : (_jsx(Text, { type: "secondary", children: "No procesado" })) }), _jsx(Descriptions.Item, { label: "Intentos", children: _jsxs(Space, { children: [_jsx(Text, { children: record.attempts }), record.attempts >= 3 && record.status === "failed" && (_jsx(Tag, { color: "red", children: "M\u00E1ximo alcanzado" }))] }) }), _jsx(Descriptions.Item, { label: "Duraci\u00F3n", children: record.processedAt && (_jsxs(Text, { children: [((new Date(record.processedAt).getTime() - new Date(record.receivedAt).getTime()) / 1000).toFixed(2), "s"] })) })] }) }), _jsxs(Collapse, { defaultActiveKey: ["headers", "payload"], style: { marginTop: 16 }, children: [_jsx(Panel, { header: _jsxs(Space, { children: [_jsx(FileTextOutlined, {}), " Headers"] }), children: _jsx("pre", { style: { background: "#f5f5f5", padding: 16, borderRadius: 4, overflow: "auto" }, children: JSON.stringify(record.headers, null, 2) }) }, "headers"), _jsx(Panel, { header: _jsxs(Space, { children: [_jsx(CodeOutlined, {}), " Payload"] }), children: _jsx("pre", { style: { background: "#f5f5f5", padding: 16, borderRadius: 4, overflow: "auto" }, children: JSON.stringify(record.payload, null, 2) }) }, "payload"), record.response && (_jsxs(Panel, { header: _jsxs(Space, { children: [_jsx(InfoCircleOutlined, { style: { color: "#52c41a" } }), "Response (Status: ", record.response.status, ")"] }), children: [_jsx(Alert, { message: "Procesado exitosamente", description: record.response.message, type: "success", showIcon: true, style: { marginBottom: 16 } }), _jsx("pre", { style: { background: "#f6ffed", padding: 16, borderRadius: 4, overflow: "auto" }, children: JSON.stringify(record.response, null, 2) })] }, "response")), record.error && (_jsxs(Panel, { header: _jsxs(Space, { children: [_jsx(InfoCircleOutlined, { style: { color: "#ff4d4f" } }), "Error"] }), children: [_jsx(Alert, { message: `Error: ${record.error.code}`, description: record.error.message, type: "error", showIcon: true, style: { marginBottom: 16 } }), _jsxs(Descriptions, { column: 1, children: [_jsx(Descriptions.Item, { label: "C\u00F3digo", children: _jsx(Text, { code: true, children: record.error.code }) }), _jsx(Descriptions.Item, { label: "Mensaje", children: _jsx(Text, { type: "danger", children: record.error.message }) }), _jsx(Descriptions.Item, { label: "Timestamp", children: _jsx(DateField, { value: record.error.timestamp, format: "DD/MM/YYYY HH:mm:ss" }) })] })] }, "error"))] })] })) }));
+};

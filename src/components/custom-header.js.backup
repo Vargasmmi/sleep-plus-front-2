@@ -1,0 +1,56 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Layout, Avatar, Space, Dropdown, Typography, Button, theme, Badge, } from "antd";
+import { UserOutlined, SettingOutlined, LogoutOutlined, BellOutlined, MenuFoldOutlined, MenuUnfoldOutlined, } from "@ant-design/icons";
+import { useGetIdentity, useLogout } from "@refinedev/core";
+import { useNavigate } from "react-router-dom";
+const { Header } = Layout;
+const { Text } = Typography;
+export const CustomHeader = ({ collapsed, onCollapsed }) => {
+    const { token } = theme.useToken();
+    const { data: user } = useGetIdentity();
+    const { mutate: logout } = useLogout();
+    const navigate = useNavigate();
+    const items = [
+        {
+            key: "profile",
+            icon: _jsx(UserOutlined, {}),
+            label: "My Profile",
+            onClick: () => navigate("/profile"),
+        },
+        {
+            key: "settings",
+            icon: _jsx(SettingOutlined, {}),
+            label: "Settings",
+            onClick: () => navigate("/profile"),
+        },
+        {
+            type: "divider",
+        },
+        {
+            key: "logout",
+            icon: _jsx(LogoutOutlined, {}),
+            label: "Sign Out",
+            danger: true,
+            onClick: () => {
+                logout();
+            },
+        },
+    ];
+    return (_jsxs(Header, { style: {
+            backgroundColor: token.colorBgContainer,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0 24px",
+            height: 64,
+            borderBottom: `1px solid ${token.colorBorderSecondary}`,
+        }, children: [_jsx(Button, { type: "text", icon: collapsed ? _jsx(MenuUnfoldOutlined, {}) : _jsx(MenuFoldOutlined, {}), onClick: () => onCollapsed?.(!collapsed), style: {
+                    fontSize: "16px",
+                    width: 64,
+                    height: 64,
+                } }), _jsxs(Space, { size: "middle", children: [_jsx(Badge, { count: 5, size: "small", children: _jsx(Button, { type: "text", icon: _jsx(BellOutlined, { style: { fontSize: 20 } }), style: { width: 40, height: 40 } }) }), _jsx(Dropdown, { menu: { items }, placement: "bottomRight", arrow: true, children: _jsxs(Space, { style: { cursor: "pointer" }, children: [_jsx(Avatar, { size: "default", icon: _jsx(UserOutlined, {}), src: user?.avatar, style: { backgroundColor: token.colorPrimary } }), _jsxs(Space, { direction: "vertical", size: 0, children: [_jsx(Text, { strong: true, style: { fontSize: 14 }, children: user?.name || user?.firstName || "User" }), _jsx(Text, { type: "secondary", style: { fontSize: 12 }, children: user?.role === "admin"
+                                                ? "Administrator"
+                                                : user?.role === "manager"
+                                                    ? "Manager"
+                                                    : "Agent" })] })] }) })] })] }));
+};

@@ -1,0 +1,12 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+export const Loading = () => {
+    return (_jsx("div", { style: {
+            height: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#f0f2f5",
+        }, children: _jsxs("div", { style: { textAlign: "center" }, children: [_jsx(Spin, { indicator: _jsx(LoadingOutlined, { style: { fontSize: 48 }, spin: true }), size: "large" }), _jsx("div", { style: { marginTop: 16, color: "#666" }, children: "Loading..." })] }) }));
+};

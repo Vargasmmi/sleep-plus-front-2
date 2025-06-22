@@ -1,0 +1,7 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input, Select } from "antd";
+export const DoctorCreate = () => {
+    const { formProps, saveButtonProps } = useForm();
+    return (_jsx(Create, { saveButtonProps: saveButtonProps, children: _jsxs(Form, { ...formProps, layout: "vertical", children: [_jsx(Form.Item, { label: "Name", name: "name", rules: [{ required: true }], children: _jsx(Input, { placeholder: "Dr. John Smith" }) }), _jsx(Form.Item, { label: "Specialty", name: "specialty", rules: [{ required: true }], children: _jsxs(Select, { placeholder: "Select specialty", children: [_jsx(Select.Option, { value: "sleep-medicine", children: "Sleep Medicine" }), _jsx(Select.Option, { value: "neurology", children: "Neurology" }), _jsx(Select.Option, { value: "pulmonology", children: "Pulmonology" })] }) }), _jsx(Form.Item, { label: "Email", name: "email", rules: [{ required: true, type: "email" }], children: _jsx(Input, { placeholder: "doctor@sleepplus.com" }) }), _jsx(Form.Item, { label: "Phone", name: "phone", rules: [{ required: true }], children: _jsx(Input, { placeholder: "+1 234 567 8900" }) }), _jsx(Form.Item, { label: "Status", name: "status", rules: [{ required: true }], children: _jsxs(Select, { placeholder: "Select status", children: [_jsx(Select.Option, { value: "available", children: "Available" }), _jsx(Select.Option, { value: "busy", children: "Busy" })] }) })] }) }));
+};

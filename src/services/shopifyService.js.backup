@@ -1,0 +1,68 @@
+import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+class ShopifyService {
+    async testConnection() {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/shopify/test-connection`);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(error.response?.data?.message || 'Error testing Shopify connection');
+        }
+    }
+    async syncProducts() {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/api/shopify/sync/products`);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(error.response?.data?.message || 'Error syncing products');
+        }
+    }
+    async syncCustomers() {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/api/shopify/sync/customers`);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(error.response?.data?.message || 'Error syncing customers');
+        }
+    }
+    async syncCoupons() {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/api/shopify/sync/coupons`);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(error.response?.data?.message || 'Error syncing coupons');
+        }
+    }
+    async saveSettings(settings) {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/api/shopify/settings`, settings);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(error.response?.data?.message || 'Error saving settings');
+        }
+    }
+    async getSettings() {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/shopify/settings`);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(error.response?.data?.message || 'Error getting settings');
+        }
+    }
+    async createCoupon(couponData) {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/api/shopify/coupons`, couponData);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(error.response?.data?.message || 'Error creating coupon');
+        }
+    }
+}
+export const shopifyService = new ShopifyService();

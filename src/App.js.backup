@@ -1,0 +1,427 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Refine } from "@refinedev/core";
+import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
+import { notificationProvider, ErrorComponent, } from "@refinedev/antd";
+import routerBindings, { DocumentTitleHandler, UnsavedChangesNotifier, } from "@refinedev/react-router-v6";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { App as AntdApp, ConfigProvider } from "antd";
+import "@refinedev/antd/dist/reset.css";
+import { DashboardOutlined, UserOutlined, CreditCardOutlined, PhoneOutlined, DollarOutlined, TeamOutlined, ShopOutlined, RocketOutlined, TrophyOutlined, FileTextOutlined, WalletOutlined, ScanOutlined, BarChartOutlined, SettingOutlined, ToolOutlined, ShoppingCartOutlined, TagOutlined, ApiOutlined, HistoryOutlined, ApiOutlined as WebhookOutlined, AuditOutlined, CheckSquareOutlined, CrownOutlined, LockOutlined, CalendarOutlined, MedicineBoxOutlined, } from "@ant-design/icons";
+// Import custom providers
+import { authProvider } from "./providers/authProvider";
+import { accessControlProvider } from "./providers/accessControlProvider";
+import { customDataProvider } from "./providers/dataProvider";
+// Import pages
+import { Login } from "./pages/login";
+import { DashboardPage } from "./pages/dashboard";
+import { AuthenticatedLayout } from "./components/authenticated-layout";
+import { CallCenterPage } from "./pages/call-center";
+import { ProfilePage } from "./pages/profile";
+// Import customer pages
+import { CustomerList, CustomerCreate, CustomerEdit, CustomerShow, } from "./pages/customers";
+// Import subscription pages
+import { SubscriptionList, SubscriptionCreate, SubscriptionEdit, SubscriptionShow, } from "./pages/subscriptions";
+// Import evaluation pages
+import { EvaluationList, EvaluationShow, EvaluationCreate, EvaluationEdit, } from "./pages/evaluations";
+// Import employee pages
+import { EmployeeList, EmployeeCreate, EmployeeEdit, EmployeeShow, } from "./pages/employees";
+// Import store pages
+import { StoreList, StoreCreate, StoreEdit, StoreShow } from "./pages/stores";
+// Import call pages
+import { CallList, CallShow, CallCreate, CallEdit } from "./pages/calls";
+// Import sale pages
+import { SaleList, SaleShow, SaleCreate, SaleEdit } from "./pages/sales";
+// Import campaign pages
+import { CampaignList, CampaignCreate, CampaignEdit, CampaignShow, } from "./pages/campaigns";
+// Import commission pages
+import { CommissionList, CommissionShow, CommissionCreate, CommissionEdit } from "./pages/commissions";
+// Import achievement pages
+import { AchievementList, AchievementCreate, AchievementEdit, AchievementShow, } from "./pages/achievements";
+// Import script pages
+import { ScriptList, ScriptCreate, ScriptEdit, ScriptShow, } from "./pages/scripts";
+import { ScriptEditSimple } from "./pages/scripts/edit-simple";
+// Import activity log pages
+import { ActivityLogList, ActivityLogShow } from "./pages/activity-logs";
+// Import webhook pages
+import { WebhookList, WebhookShow, WebhookSettings } from "./pages/webhooks";
+// Import admin pages
+import { SystemSettingsPage } from "./pages/admin/settings";
+import { PermissionsPage } from "./pages/admin/permissions";
+// Import tasks and leaderboard pages
+import { TasksPage } from "./pages/tasks";
+import { LeaderboardPage } from "./pages/leaderboard";
+// Import Shopify pages
+import { ShopifySettingsPage } from "./pages/shopify/settings";
+import { ShopifyProductList, ShopifyProductCreate, ShopifyProductEdit, ShopifyProductShow, } from "./pages/shopify/products";
+import { ShopifyCustomerList, ShopifyCustomerCreate, ShopifyCustomerEdit, ShopifyCustomerShow, } from "./pages/shopify/customers";
+import { ShopifyCouponList, ShopifyCouponCreate, ShopifyCouponEdit, ShopifyCouponShow, } from "./pages/shopify/coupons";
+// Import Stripe pages
+import StripeManagement from "./pages/StripeManagement";
+// Import medical pages (new)
+import { AppointmentList, AppointmentCreate, AppointmentEdit, AppointmentShow, } from "./pages/appointments";
+import { DoctorList, DoctorCreate, DoctorEdit, DoctorShow, } from "./pages/doctors";
+import { PatientList, PatientCreate, PatientEdit, PatientShow, } from "./pages/patients";
+function App() {
+    return (_jsx(BrowserRouter, { children: _jsx(RefineKbarProvider, { children: _jsx(ConfigProvider, { theme: {
+                    token: {
+                        colorPrimary: "#1890ff",
+                        colorSuccess: "#52c41a",
+                        colorWarning: "#faad14",
+                        colorError: "#f5222d",
+                        colorInfo: "#1890ff",
+                        colorTextBase: "#000000",
+                        colorBgBase: "#ffffff",
+                        borderRadius: 6,
+                    },
+                }, children: _jsx(AntdApp, { children: _jsxs(Refine, { dataProvider: customDataProvider, authProvider: authProvider, accessControlProvider: accessControlProvider, routerProvider: routerBindings, notificationProvider: notificationProvider, resources: [
+                            // Navigation groups
+                            {
+                                name: "reports",
+                                meta: {
+                                    label: "Reportes",
+                                    icon: _jsx(BarChartOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "administration",
+                                meta: {
+                                    label: "Administración",
+                                    icon: _jsx(SettingOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "tools",
+                                meta: {
+                                    label: "Herramientas",
+                                    icon: _jsx(ToolOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "shopify",
+                                meta: {
+                                    label: "Tienda Shopify",
+                                    icon: _jsx(ShopOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "system",
+                                meta: {
+                                    label: "Sistema",
+                                    icon: _jsx(AuditOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "medical",
+                                meta: {
+                                    label: "Médico",
+                                    icon: _jsx(MedicineBoxOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "dailyTasks",
+                                list: "/tasks",
+                                meta: {
+                                    label: "Tareas Diarias",
+                                    icon: _jsx(CheckSquareOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "leaderboard",
+                                list: "/leaderboard",
+                                meta: {
+                                    label: "Tabla de Líderes",
+                                    icon: _jsx(CrownOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "systemSettings",
+                                list: "/admin/settings",
+                                meta: {
+                                    label: "Configuración",
+                                    icon: _jsx(SettingOutlined, {}),
+                                    parent: "administration",
+                                },
+                            },
+                            {
+                                name: "permissions",
+                                list: "/admin/permissions",
+                                meta: {
+                                    label: "Permisos",
+                                    icon: _jsx(LockOutlined, {}),
+                                    parent: "administration",
+                                },
+                            },
+                            {
+                                name: "dashboard",
+                                list: "/",
+                                meta: {
+                                    label: "Panel Principal",
+                                    icon: _jsx(DashboardOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "call-center",
+                                list: "/call-center",
+                                meta: {
+                                    label: "Centro de Llamadas",
+                                    icon: _jsx(PhoneOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "customers",
+                                list: "/customers",
+                                create: "/customers/create",
+                                edit: "/customers/edit/:id",
+                                show: "/customers/show/:id",
+                                meta: {
+                                    label: "Clientes",
+                                    icon: _jsx(UserOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "subscriptions",
+                                list: "/subscriptions",
+                                create: "/subscriptions/create",
+                                edit: "/subscriptions/edit/:id",
+                                show: "/subscriptions/show/:id",
+                                meta: {
+                                    label: "Suscripciones",
+                                    icon: _jsx(CreditCardOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "evaluations",
+                                list: "/evaluations",
+                                create: "/evaluations/create",
+                                edit: "/evaluations/edit/:id",
+                                show: "/evaluations/show/:id",
+                                meta: {
+                                    label: "Evaluaciones T&S",
+                                    icon: _jsx(ScanOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "calls",
+                                list: "/calls",
+                                create: "/calls/create",
+                                edit: "/calls/edit/:id",
+                                show: "/calls/show/:id",
+                                meta: {
+                                    label: "Llamadas",
+                                    icon: _jsx(PhoneOutlined, {}),
+                                    parent: "reports",
+                                },
+                            },
+                            {
+                                name: "sales",
+                                list: "/sales",
+                                create: "/sales/create",
+                                edit: "/sales/edit/:id",
+                                show: "/sales/show/:id",
+                                meta: {
+                                    label: "Ventas",
+                                    icon: _jsx(DollarOutlined, {}),
+                                    parent: "reports",
+                                },
+                            },
+                            {
+                                name: "campaigns",
+                                list: "/campaigns",
+                                create: "/campaigns/create",
+                                edit: "/campaigns/edit/:id",
+                                show: "/campaigns/show/:id",
+                                meta: {
+                                    label: "Campañas",
+                                    icon: _jsx(RocketOutlined, {}),
+                                },
+                            },
+                            {
+                                name: "employees",
+                                list: "/employees",
+                                create: "/employees/create",
+                                edit: "/employees/edit/:id",
+                                show: "/employees/show/:id",
+                                meta: {
+                                    label: "Empleados",
+                                    icon: _jsx(TeamOutlined, {}),
+                                    parent: "administration",
+                                },
+                            },
+                            {
+                                name: "stores",
+                                list: "/stores",
+                                create: "/stores/create",
+                                edit: "/stores/edit/:id",
+                                show: "/stores/show/:id",
+                                meta: {
+                                    label: "Tiendas",
+                                    icon: _jsx(ShopOutlined, {}),
+                                    parent: "administration",
+                                },
+                            },
+                            {
+                                name: "commissions",
+                                list: "/commissions",
+                                create: "/commissions/create",
+                                edit: "/commissions/edit/:id",
+                                show: "/commissions/show/:id",
+                                meta: {
+                                    label: "Comisiones",
+                                    icon: _jsx(WalletOutlined, {}),
+                                    parent: "administration",
+                                },
+                            },
+                            {
+                                name: "achievements",
+                                list: "/achievements",
+                                create: "/achievements/create",
+                                edit: "/achievements/edit/:id",
+                                show: "/achievements/show/:id",
+                                meta: {
+                                    label: "Logros",
+                                    icon: _jsx(TrophyOutlined, {}),
+                                    parent: "administration",
+                                },
+                            },
+                            {
+                                name: "scripts",
+                                list: "/scripts",
+                                create: "/scripts/create",
+                                edit: "/scripts/edit/:id",
+                                show: "/scripts/show/:id",
+                                meta: {
+                                    label: "Guiones",
+                                    icon: _jsx(FileTextOutlined, {}),
+                                    parent: "tools",
+                                },
+                            },
+                            // Stripe Resources
+                            {
+                                name: "stripeManagement",
+                                list: "/stripe",
+                                meta: {
+                                    label: "Gestión de Stripe",
+                                    icon: _jsx(CreditCardOutlined, {}),
+                                    parent: "tools",
+                                },
+                            },
+                            // Shopify Resources
+                            {
+                                name: "shopifySettings",
+                                list: "/shopify/settings",
+                                meta: {
+                                    label: "Configuración",
+                                    icon: _jsx(ApiOutlined, {}),
+                                    parent: "shopify",
+                                },
+                            },
+                            {
+                                name: "shopifyProducts",
+                                list: "/shopify/products",
+                                create: "/shopify/products/create",
+                                edit: "/shopify/products/edit/:id",
+                                show: "/shopify/products/show/:id",
+                                meta: {
+                                    label: "Productos",
+                                    icon: _jsx(ShoppingCartOutlined, {}),
+                                    parent: "shopify",
+                                },
+                            },
+                            {
+                                name: "shopifyCustomers",
+                                list: "/shopify/customers",
+                                create: "/shopify/customers/create",
+                                edit: "/shopify/customers/edit/:id",
+                                show: "/shopify/customers/show/:id",
+                                meta: {
+                                    label: "Clientes",
+                                    icon: _jsx(UserOutlined, {}),
+                                    parent: "shopify",
+                                },
+                            },
+                            {
+                                name: "shopifyCoupons",
+                                list: "/shopify/coupons",
+                                create: "/shopify/coupons/create",
+                                edit: "/shopify/coupons/edit/:id",
+                                show: "/shopify/coupons/show/:id",
+                                meta: {
+                                    label: "Cupones",
+                                    icon: _jsx(TagOutlined, {}),
+                                    parent: "shopify",
+                                },
+                            },
+                            // Medical Resources (new)
+                            {
+                                name: "appointments",
+                                list: "/appointments",
+                                create: "/appointments/create",
+                                edit: "/appointments/edit/:id",
+                                show: "/appointments/show/:id",
+                                meta: {
+                                    label: "Citas",
+                                    icon: _jsx(CalendarOutlined, {}),
+                                    parent: "medical",
+                                },
+                            },
+                            {
+                                name: "doctors",
+                                list: "/doctors",
+                                create: "/doctors/create",
+                                edit: "/doctors/edit/:id",
+                                show: "/doctors/show/:id",
+                                meta: {
+                                    label: "Doctores",
+                                    icon: _jsx(MedicineBoxOutlined, {}),
+                                    parent: "medical",
+                                },
+                            },
+                            {
+                                name: "patients",
+                                list: "/patients",
+                                create: "/patients/create",
+                                edit: "/patients/edit/:id",
+                                show: "/patients/show/:id",
+                                meta: {
+                                    label: "Pacientes",
+                                    icon: _jsx(UserOutlined, {}),
+                                    parent: "medical",
+                                },
+                            },
+                            // System Resources
+                            {
+                                name: "activityLogs",
+                                list: "/activity-logs",
+                                show: "/activity-logs/show/:id",
+                                meta: {
+                                    label: "Registro de Actividades",
+                                    icon: _jsx(HistoryOutlined, {}),
+                                    parent: "system",
+                                },
+                            },
+                            {
+                                name: "webhooks",
+                                list: "/webhooks",
+                                show: "/webhooks/show/:id",
+                                meta: {
+                                    label: "Webhooks",
+                                    icon: _jsx(WebhookOutlined, {}),
+                                    parent: "system",
+                                },
+                            },
+                            {
+                                name: "webhookSettings",
+                                list: "/webhooks/settings",
+                                meta: {
+                                    label: "Configuración de Webhooks",
+                                    icon: _jsx(SettingOutlined, {}),
+                                    parent: "system",
+                                },
+                            },
+                        ], options: {
+                            syncWithLocation: true,
+                            warnWhenUnsavedChanges: true,
+                            projectId: "sleep-plus-elite",
+                        }, children: [_jsxs(Routes, { children: [_jsx(Route, { path: "/login", element: _jsx(Login, {}) }), _jsxs(Route, { element: _jsx(AuthenticatedLayout, {}), children: [_jsx(Route, { index: true, element: _jsx(DashboardPage, {}) }), _jsx(Route, { path: "/call-center", element: _jsx(CallCenterPage, {}) }), _jsx(Route, { path: "/profile", element: _jsx(ProfilePage, {}) }), _jsxs(Route, { path: "/customers", children: [_jsx(Route, { index: true, element: _jsx(CustomerList, {}) }), _jsx(Route, { path: "create", element: _jsx(CustomerCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(CustomerEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(CustomerShow, {}) })] }), _jsxs(Route, { path: "/subscriptions", children: [_jsx(Route, { index: true, element: _jsx(SubscriptionList, {}) }), _jsx(Route, { path: "create", element: _jsx(SubscriptionCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(SubscriptionEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(SubscriptionShow, {}) })] }), _jsxs(Route, { path: "/evaluations", children: [_jsx(Route, { index: true, element: _jsx(EvaluationList, {}) }), _jsx(Route, { path: "create", element: _jsx(EvaluationCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(EvaluationEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(EvaluationShow, {}) })] }), _jsxs(Route, { path: "/calls", children: [_jsx(Route, { index: true, element: _jsx(CallList, {}) }), _jsx(Route, { path: "create", element: _jsx(CallCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(CallEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(CallShow, {}) })] }), _jsxs(Route, { path: "/sales", children: [_jsx(Route, { index: true, element: _jsx(SaleList, {}) }), _jsx(Route, { path: "create", element: _jsx(SaleCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(SaleEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(SaleShow, {}) })] }), _jsxs(Route, { path: "/campaigns", children: [_jsx(Route, { index: true, element: _jsx(CampaignList, {}) }), _jsx(Route, { path: "create", element: _jsx(CampaignCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(CampaignEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(CampaignShow, {}) })] }), _jsxs(Route, { path: "/employees", children: [_jsx(Route, { index: true, element: _jsx(EmployeeList, {}) }), _jsx(Route, { path: "create", element: _jsx(EmployeeCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(EmployeeEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(EmployeeShow, {}) })] }), _jsxs(Route, { path: "/stores", children: [_jsx(Route, { index: true, element: _jsx(StoreList, {}) }), _jsx(Route, { path: "create", element: _jsx(StoreCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(StoreEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(StoreShow, {}) })] }), _jsxs(Route, { path: "/commissions", children: [_jsx(Route, { index: true, element: _jsx(CommissionList, {}) }), _jsx(Route, { path: "create", element: _jsx(CommissionCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(CommissionEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(CommissionShow, {}) })] }), _jsxs(Route, { path: "/achievements", children: [_jsx(Route, { index: true, element: _jsx(AchievementList, {}) }), _jsx(Route, { path: "create", element: _jsx(AchievementCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(AchievementEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(AchievementShow, {}) })] }), _jsxs(Route, { path: "/scripts", children: [_jsx(Route, { index: true, element: _jsx(ScriptList, {}) }), _jsx(Route, { path: "create", element: _jsx(ScriptCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(ScriptEdit, {}) }), _jsx(Route, { path: "edit-simple/:id", element: _jsx(ScriptEditSimple, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(ScriptShow, {}) })] }), _jsx(Route, { path: "/stripe", element: _jsx(StripeManagement, {}) }), _jsxs(Route, { path: "/shopify", children: [_jsx(Route, { path: "settings", element: _jsx(ShopifySettingsPage, {}) }), _jsxs(Route, { path: "products", children: [_jsx(Route, { index: true, element: _jsx(ShopifyProductList, {}) }), _jsx(Route, { path: "create", element: _jsx(ShopifyProductCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(ShopifyProductEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(ShopifyProductShow, {}) })] }), _jsxs(Route, { path: "customers", children: [_jsx(Route, { index: true, element: _jsx(ShopifyCustomerList, {}) }), _jsx(Route, { path: "create", element: _jsx(ShopifyCustomerCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(ShopifyCustomerEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(ShopifyCustomerShow, {}) })] }), _jsxs(Route, { path: "coupons", children: [_jsx(Route, { index: true, element: _jsx(ShopifyCouponList, {}) }), _jsx(Route, { path: "create", element: _jsx(ShopifyCouponCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(ShopifyCouponEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(ShopifyCouponShow, {}) })] })] }), _jsxs(Route, { path: "/appointments", children: [_jsx(Route, { index: true, element: _jsx(AppointmentList, {}) }), _jsx(Route, { path: "create", element: _jsx(AppointmentCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(AppointmentEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(AppointmentShow, {}) })] }), _jsxs(Route, { path: "/doctors", children: [_jsx(Route, { index: true, element: _jsx(DoctorList, {}) }), _jsx(Route, { path: "create", element: _jsx(DoctorCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(DoctorEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(DoctorShow, {}) })] }), _jsxs(Route, { path: "/patients", children: [_jsx(Route, { index: true, element: _jsx(PatientList, {}) }), _jsx(Route, { path: "create", element: _jsx(PatientCreate, {}) }), _jsx(Route, { path: "edit/:id", element: _jsx(PatientEdit, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(PatientShow, {}) })] }), _jsxs(Route, { path: "/activity-logs", children: [_jsx(Route, { index: true, element: _jsx(ActivityLogList, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(ActivityLogShow, {}) })] }), _jsxs(Route, { path: "/webhooks", children: [_jsx(Route, { index: true, element: _jsx(WebhookList, {}) }), _jsx(Route, { path: "show/:id", element: _jsx(WebhookShow, {}) }), _jsx(Route, { path: "settings", element: _jsx(WebhookSettings, {}) })] }), _jsx(Route, { path: "/tasks", element: _jsx(TasksPage, {}) }), _jsx(Route, { path: "/leaderboard", element: _jsx(LeaderboardPage, {}) }), _jsxs(Route, { path: "/admin", children: [_jsx(Route, { path: "settings", element: _jsx(SystemSettingsPage, {}) }), _jsx(Route, { path: "permissions", element: _jsx(PermissionsPage, {}) })] }), _jsx(Route, { path: "*", element: _jsx(ErrorComponent, {}) })] })] }), _jsx(RefineKbar, {}), _jsx(UnsavedChangesNotifier, {}), _jsx(DocumentTitleHandler, {})] }) }) }) }) }));
+}
+export default App;
