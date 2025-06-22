@@ -28,9 +28,9 @@ COPY --from=builder /app/dist ./dist
 # Expose port
 EXPOSE 3000
 
-# Force serve to listen on all interfaces
+# Force serve to listen on all interfaces (CRÍTICO para EasyPanel)
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Start the application
+# Start the application with proper configuration for EasyPanel
 CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:3000 --no-clipboard"]
