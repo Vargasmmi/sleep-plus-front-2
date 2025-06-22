@@ -1,8 +1,8 @@
 import React from "react";
-import { useTable, useDelete, useShow, IResourceComponentsProps, GetOneResponse } from "@refinedev/core";
+import { useTable, useDelete, IResourceComponentsProps } from "@refinedev/core";
 import { useModalForm, useSelect } from "@refinedev/antd";
-import { List, EditButton, DeleteButton, ShowButton, CreateButton } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, Select, DatePicker, Tag, Card, Typography, Avatar, Row, Col, Statistic } from "antd";
+import { EditButton, DeleteButton, ShowButton, CreateButton } from "@refinedev/antd";
+import { Table, Space, Modal, Form, Input, Select, Tag, Card, Typography, Avatar, Row, Col, Statistic } from "antd";
 import { UserOutlined, PhoneOutlined, MailOutlined, CrownOutlined, StarOutlined } from "@ant-design/icons";
 import { Customer, Employee } from "../../interfaces";
 import dayjs from "dayjs";
@@ -11,27 +11,8 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 export const CustomerList: React.FC<IResourceComponentsProps> = () => {
-  const { tableProps, searchFormProps } = useTable<Customer>({
+  const { tableProps } = useTable<Customer>({
     resource: "customers",
-    onSearch: (values) => {
-      return [
-        {
-          field: "firstName",
-          operator: "contains",
-          value: values.q,
-        },
-        {
-          field: "lastName",
-          operator: "contains",
-          value: values.q,
-        },
-        {
-          field: "email",
-          operator: "contains",
-          value: values.q,
-        },
-      ];
-    },
     pagination: {
       pageSize: 10,
     },
@@ -61,7 +42,6 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
     modalProps: editModalProps,
     formProps: editFormProps,
     show: showEditModal,
-    queryResult: editQueryResult,
   } = useModalForm<Customer>({
     resource: "customers",
     action: "edit",
@@ -189,6 +169,8 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
     },
   ];
 
+  const customers = tableProps.dataSource || [];
+
   return (
     <div style={{ padding: 24 }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
@@ -207,7 +189,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
           <Card>
             <Statistic
               title="Total Clientes"
-              value={tableProps.dataSource?.length || 0}
+              value={customers.length}
               prefix={<UserOutlined />}
               valueStyle={{ color: "#1890ff" }}
             />
@@ -217,7 +199,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
           <Card>
             <Statistic
               title="Miembros Elite"
-              value={tableProps.dataSource?.filter((c: Customer) => c.isEliteMember).length || 0}
+              value={customers.filter((c: Customer) => c.isEliteMember).length}
               prefix={<CrownOutlined />}
               valueStyle={{ color: "#faad14" }}
             />
@@ -227,7 +209,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
           <Card>
             <Statistic
               title="Clientes Activos"
-              value={tableProps.dataSource?.filter((c: Customer) => c.status === "active").length || 0}
+              value={customers.filter((c: Customer) => c.status === "active").length}
               prefix={<UserOutlined />}
               valueStyle={{ color: "#52c41a" }}
             />
@@ -237,7 +219,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
           <Card>
             <Statistic
               title="Sin Agente"
-              value={tableProps.dataSource?.filter((c: Customer) => !c.assignedAgentId).length || 0}
+              value={customers.filter((c: Customer) => !c.assignedAgentId).length}
               prefix={<UserOutlined />}
               valueStyle={{ color: "#ff4d4f" }}
             />

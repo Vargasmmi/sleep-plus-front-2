@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { 
   Customer, 
   Employee, 
@@ -15,11 +16,47 @@ import {
   PaginatedResponse 
 } from '../interfaces';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Base API configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
+// Create axios instance
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor to add auth token
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth-token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Handle unauthorized access
+      localStorage.removeItem('auth-token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Función helper para hacer requests
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
-  const url = `${API_URL}${endpoint}`;
+  const url = `${API_BASE_URL}${endpoint}`;
   const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -38,7 +75,7 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
 export const api = {
   // Health check
   async checkHealth() {
-    const response = await fetch(`${API_URL.replace('/api', '')}/health`);
+    const response = await fetch(`${API_BASE_URL.replace('/api', '')}/health`);
     return response.json();
   },
 
@@ -505,8 +542,8 @@ export const api = {
   // Sleep Records (mantener para compatibilidad)
   async getSleepRecords(userId?: number) {
     const url = userId 
-      ? `${API_URL}/sleep-records?userId=${userId}`
-      : `${API_URL}/sleep-records`;
+      ? `${API_BASE_URL}/sleep-records?userId=${userId}`
+      : `${API_BASE_URL}/sleep-records`;
     const response = await fetch(url);
     return response.json();
   },
@@ -534,8 +571,8 @@ export const api = {
   // Sleep Goals (mantener para compatibilidad)
   async getSleepGoals(userId?: number) {
     const url = userId 
-      ? `${API_URL}/sleep-goals?userId=${userId}`
-      : `${API_URL}/sleep-goals`;
+      ? `${API_BASE_URL}/sleep-goals?userId=${userId}`
+      : `${API_BASE_URL}/sleep-goals`;
     const response = await fetch(url);
     return response.json();
   },
@@ -557,11 +594,11 @@ export const api = {
   // Statistics (mantener para compatibilidad)
   async getStatistics(userId?: number) {
     const url = userId 
-      ? `${API_URL}/statistics?userId=${userId}`
-      : `${API_URL}/statistics`;
+      ? `${API_BASE_URL}/statistics?userId=${userId}`
+      : `${API_BASE_URL}/statistics`;
     const response = await fetch(url);
     return response.json();
   }
 };
 
-export default api;
+export default apiClient;

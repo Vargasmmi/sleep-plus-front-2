@@ -2,15 +2,13 @@ import React from "react";
 import { useList } from "@refinedev/core";
 import { Row, Col, Card, Statistic, Progress, Space, Typography, Tag, Table, Button } from "antd";
 import {
-  DollarOutlined,
   PhoneOutlined,
   TrophyOutlined,
   CheckCircleOutlined,
-  ClockCircleOutlined,
   FireOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Line, Column, Gauge } from "@ant-design/charts";
+import { Column, Gauge } from "@ant-design/charts";
 import dayjs from "dayjs";
 import { Employee, Sale, Customer } from "../../interfaces";
 

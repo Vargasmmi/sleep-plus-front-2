@@ -1,23 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useGetIdentity } from "@refinedev/core";
-import { Row, Col, Card, Statistic, Progress, Space, Typography, Tag, Alert, Button, List, Avatar } from "antd";
-import {
-  DollarOutlined,
-  UserOutlined,
-  PhoneOutlined,
-  RiseOutlined,
-  TeamOutlined,
-  TrophyOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  ExclamationCircleOutlined,
-  FireOutlined,
-} from "@ant-design/icons";
-import { Line, Column, Pie, Gauge } from "@ant-design/charts";
-import dayjs from "dayjs";
+import { Alert, Typography } from "antd";
 import { Employee } from "../../interfaces";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 // Import role-specific dashboards
 import { AdminDashboard } from "./AdminDashboard";

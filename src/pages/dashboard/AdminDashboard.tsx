@@ -7,13 +7,11 @@ import {
   PhoneOutlined,
   TeamOutlined,
   ShopOutlined,
-  GlobalOutlined,
   SettingOutlined,
   SafetyOutlined,
   RiseOutlined,
-  FallOutlined,
 } from "@ant-design/icons";
-import { Line, Column, Pie, Area, DualAxes } from "@ant-design/charts";
+import { Column, Pie } from "@ant-design/charts";
 import dayjs from "dayjs";
 import { Employee, Store, Sale, Customer } from "../../interfaces";
 
@@ -82,17 +80,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     { type: 'Plata', value: customers.filter(c => c.tier === 'silver').length },
     { type: 'Bronce', value: customers.filter(c => c.tier === 'bronze').length },
   ];
-
-  // Sales trend (last 30 days)
-  const last30Days = Array.from({ length: 30 }, (_, i) => {
-    const date = dayjs().subtract(29 - i, 'days');
-    const daySales = sales.filter(s => dayjs(s.createdAt).isSame(date, 'day'));
-    return {
-      date: date.format('MM/DD'),
-      sales: daySales.reduce((sum, s) => sum + s.amount, 0),
-      count: daySales.length,
-    };
-  });
 
   return (
     <div style={{ padding: 24 }}>
