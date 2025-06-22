@@ -1,6 +1,6 @@
 import { AuthProvider } from "@refinedev/core";
 import { activityLogService } from "../services/activityLogService";
-import { API_URL } from "../config/env";
+import { API_URL } from "../config/constants"; // Usar constants en lugar de env
 
 // No agregamos /api porque json-server no lo usa
 const FULL_API_URL = API_URL;

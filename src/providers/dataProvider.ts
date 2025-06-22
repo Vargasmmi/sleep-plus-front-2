@@ -2,7 +2,7 @@ import { DataProvider } from "@refinedev/core";
 import axios from "axios";
 import { activityLogService } from "../services/activityLogService";
 import { ACTIVITY_RESOURCES } from "../interfaces/activityLog";
-import { API_URL } from "../config/env";
+import { API_URL } from "../config/constants"; // Usar constants en lugar de env
 
 // No agregamos /api porque json-server no lo usa
 const FULL_API_URL = API_URL;
