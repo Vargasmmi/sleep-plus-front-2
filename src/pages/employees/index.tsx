@@ -1,78 +1,13 @@
 import React from "react";
-import { useTable, useDelete, useShow, IResourceComponentsProps, GetOneResponse } from "@refinedev/core";
-import { useModalForm, useSelect } from "@refinedev/antd";
-import { List, EditButton, DeleteButton, ShowButton, CreateButton } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, Select, DatePicker, Tag, Card, Typography, Avatar, Row, Col, Statistic, Progress } from "antd";
+import { Table, Space, Tag, Card, Typography, Avatar, Row, Col, Statistic, Progress } from "antd";
 import { UserOutlined, PhoneOutlined, MailOutlined, TeamOutlined, TrophyOutlined, FireOutlined } from "@ant-design/icons";
-import { Employee, Store } from "../../interfaces";
-import dayjs from "dayjs";
+import { Employee } from "../../interfaces";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
-export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
-  const { tableProps, searchFormProps } = useTable<Employee>({
-    resource: "employees",
-    onSearch: (values) => {
-      return [
-        {
-          field: "firstName",
-          operator: "contains",
-          value: values.q,
-        },
-        {
-          field: "lastName",
-          operator: "contains",
-          value: values.q,
-        },
-        {
-          field: "email",
-          operator: "contains",
-          value: values.q,
-        },
-      ];
-    },
-    pagination: {
-      pageSize: 10,
-    },
-    sorters: {
-      initial: [
-        {
-          field: "createdAt",
-          order: "desc",
-        },
-      ],
-    },
-  });
-
-  const { mutate: deleteEmployee } = useDelete();
-
-  const {
-    modalProps: createModalProps,
-    formProps: createFormProps,
-    show: showCreateModal,
-  } = useModalForm<Employee>({
-    resource: "employees",
-    action: "create",
-    redirect: false,
-  });
-
-  const {
-    modalProps: editModalProps,
-    formProps: editFormProps,
-    show: showEditModal,
-    queryResult: editQueryResult,
-  } = useModalForm<Employee>({
-    resource: "employees",
-    action: "edit",
-    redirect: false,
-  });
-
-  const { data: storesData } = useSelect<Store>({
-    resource: "stores",
-    optionLabel: "name",
-    optionValue: "id",
-  });
+export const EmployeeList: React.FC = () => {
+  // Mock data for now - this will be replaced with real API calls later
+  const employees: Employee[] = [];
 
   const columns = [
     {
@@ -100,7 +35,7 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
         <div>
           <div>
             <PhoneOutlined style={{ marginRight: 8 }} />
-            {record.phone}
+            {record.email}
           </div>
           <div>
             <MailOutlined style={{ marginRight: 8 }} />
@@ -128,15 +63,6 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
       },
     },
     {
-      title: "Tienda",
-      dataIndex: "storeId",
-      key: "storeId",
-      render: (storeId: string) => {
-        const store = storesData?.data?.find((s: Store) => s.id === storeId);
-        return store ? store.name : "Sin asignar";
-      },
-    },
-    {
       title: "Estado",
       dataIndex: "status",
       key: "status",
@@ -144,14 +70,12 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
         const colors = {
           active: "green",
           inactive: "red",
-          calling: "blue",
-          break: "orange",
+          suspended: "orange",
         };
         const labels = {
           active: "Activo",
           inactive: "Inactivo",
-          calling: "En llamada",
-          break: "En descanso",
+          suspended: "Suspendido",
         };
         return <Tag color={colors[status as keyof typeof colors]}>{labels[status as keyof typeof labels]}</Tag>;
       },
@@ -176,38 +100,12 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
             strokeColor="#52c41a"
           />
           <Text type="secondary" style={{ fontSize: "10px" }}>
-            {(record.performance?.conversionRate || 0) * 100}% conversión
+            {((record.performance?.conversionRate || 0) * 100).toFixed(1)}% conversión
           </Text>
         </div>
       ),
     },
-    {
-      title: "Fecha de Registro",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (record: Employee) => (
-        <Space>
-          <ShowButton hideText size="small" recordItemId={record.id} />
-          <EditButton hideText size="small" recordItemId={record.id} />
-          <DeleteButton
-            hideText
-            size="small"
-            recordItemId={record.id}
-            onSuccess={() => {
-              tableProps.onChange?.({ ...tableProps.pagination, current: 1 });
-            }}
-          />
-        </Space>
-      ),
-    },
   ];
-
-  const employees = tableProps.dataSource || [];
 
   return (
     <div style={{ padding: 24 }}>
@@ -215,9 +113,6 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
         <Col>
           <Title level={2}>Empleados</Title>
           <Text type="secondary">Gestión de empleados del sistema</Text>
-        </Col>
-        <Col>
-          <CreateButton onClick={showCreateModal} />
         </Col>
       </Row>
 
@@ -247,7 +142,7 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
           <Card>
             <Statistic
               title="En Llamada"
-              value={employees.filter((e: Employee) => e.status === "calling").length}
+              value={0}
               prefix={<PhoneOutlined />}
               valueStyle={{ color: "#722ed1" }}
             />
@@ -266,185 +161,12 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
       </Row>
 
       <Table
-        {...tableProps}
+        dataSource={employees}
         columns={columns}
         rowKey="id"
         scroll={{ x: 1400 }}
+        pagination={{ pageSize: 10 }}
       />
-
-      {/* Create Modal */}
-      <Modal {...createModalProps} title="Crear Empleado" width={600}>
-        <Form {...createFormProps} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Nombre"
-                name="firstName"
-                rules={[{ required: true, message: "Por favor ingrese el nombre" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Apellido"
-                name="lastName"
-                rules={[{ required: true, message: "Por favor ingrese el apellido" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Por favor ingrese el email" },
-                  { type: "email", message: "Email inválido" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Teléfono"
-                name="phone"
-                rules={[{ required: true, message: "Por favor ingrese el teléfono" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Rol"
-                name="role"
-                rules={[{ required: true, message: "Por favor seleccione el rol" }]}
-              >
-                <Select>
-                  <Option value="agent">Agente</Option>
-                  <Option value="manager">Gerente</Option>
-                  <Option value="admin">Administrador</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Tienda" name="storeId">
-                <Select allowClear>
-                  {storesData?.data?.map((store: Store) => (
-                    <Option key={store.id} value={store.id}>
-                      {store.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item
-            label="Estado"
-            name="status"
-            rules={[{ required: true, message: "Por favor seleccione el estado" }]}
-          >
-            <Select>
-              <Option value="active">Activo</Option>
-              <Option value="inactive">Inactivo</Option>
-              <Option value="calling">En llamada</Option>
-              <Option value="break">En descanso</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Edit Modal */}
-      <Modal {...editModalProps} title="Editar Empleado" width={600}>
-        <Form {...editFormProps} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Nombre"
-                name="firstName"
-                rules={[{ required: true, message: "Por favor ingrese el nombre" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Apellido"
-                name="lastName"
-                rules={[{ required: true, message: "Por favor ingrese el apellido" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Por favor ingrese el email" },
-                  { type: "email", message: "Email inválido" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Teléfono"
-                name="phone"
-                rules={[{ required: true, message: "Por favor ingrese el teléfono" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Rol"
-                name="role"
-                rules={[{ required: true, message: "Por favor seleccione el rol" }]}
-              >
-                <Select>
-                  <Option value="agent">Agente</Option>
-                  <Option value="manager">Gerente</Option>
-                  <Option value="admin">Administrador</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Tienda" name="storeId">
-                <Select allowClear>
-                  {storesData?.data?.map((store: Store) => (
-                    <Option key={store.id} value={store.id}>
-                      {store.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item
-            label="Estado"
-            name="status"
-            rules={[{ required: true, message: "Por favor seleccione el estado" }]}
-          >
-            <Select>
-              <Option value="active">Activo</Option>
-              <Option value="inactive">Inactivo</Option>
-              <Option value="calling">En llamada</Option>
-              <Option value="break">En descanso</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 }; 

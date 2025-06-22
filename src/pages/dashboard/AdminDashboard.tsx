@@ -1,84 +1,120 @@
 import React from "react";
-import { useList } from "@refinedev/core";
-import { Row, Col, Card, Statistic, Progress, Space, Typography, Tag, Table, Button } from "antd";
-import {
+import { Row, Col, Card, Statistic, Table, Space, Tag, Progress, Typography, Avatar } from "antd";
+import { 
+  UserOutlined, 
+  TeamOutlined, 
+  ShopOutlined, 
   DollarOutlined,
-  UserOutlined,
+  TrophyOutlined,
   PhoneOutlined,
-  TeamOutlined,
-  ShopOutlined,
-  SettingOutlined,
-  SafetyOutlined,
   RiseOutlined,
+  CrownOutlined
 } from "@ant-design/icons";
-import { Column, Pie } from "@ant-design/charts";
-import dayjs from "dayjs";
-import { Employee, Store, Sale, Customer } from "../../interfaces";
+import { Column } from "@ant-design/charts";
 
 const { Title, Text } = Typography;
 
-interface AdminDashboardProps {
-  user: Employee;
-}
+export const AdminDashboard: React.FC = () => {
+  // Mock data - replace with real API calls
+  const totalCustomers = 1247;
+  const totalEmployees = 45;
+  const totalStores = 8;
+  const totalRevenue = 125430;
+  const monthlyGrowth = 12.5;
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
-  // Fetch all stores
-  const { data: storesData } = useList<Store>({
-    resource: "stores",
-  });
-
-  // Fetch all employees
-  const { data: employeesData } = useList<Employee>({
-    resource: "employees",
-  });
-
-  // Fetch recent sales
-  const { data: salesData } = useList<Sale>({
-    resource: "sales",
-    sorters: [{ field: "createdAt", order: "desc" }],
-    pagination: { pageSize: 100 },
-  });
-
-  // Fetch customers
-  const { data: customersData } = useList<Customer>({
-    resource: "customers",
-  });
-
-  const stores = storesData?.data || [];
-  const employees = employeesData?.data || [];
-  const sales = salesData?.data || [];
-  const customers = customersData?.data || [];
-
-  // Calculate system-wide statistics
-  const systemStats = {
-    totalRevenue: stores.reduce((sum, store) => sum + (store.performance?.currentSales || 0), 0),
-    totalTarget: stores.reduce((sum, store) => sum + (store.performance?.monthlyTarget || 0), 0),
-    activeEmployees: employees.filter(emp => emp.status === 'active').length,
-    totalCustomers: customers.length,
-    eliteMembers: customers.filter(c => c.isEliteMember).length,
-    totalCalls: employees.reduce((sum, emp) => sum + (emp.performance?.callsToday || 0), 0),
-  };
-
-  // Performance by store
-  const storePerformanceData = stores.map(store => ({
-    name: store.name,
-    sales: store.performance?.currentSales || 0,
-    target: store.performance?.monthlyTarget || 0,
-    percentage: ((store.performance?.currentSales || 0) / (store.performance?.monthlyTarget || 1) * 100).toFixed(1),
-  }));
-
-  // Employee distribution by role
-  const employeeDistribution = [
-    { type: 'Administradores', value: employees.filter(e => e.role === 'admin').length },
-    { type: 'Gerentes', value: employees.filter(e => e.role === 'manager').length },
-    { type: 'Agentes', value: employees.filter(e => e.role === 'agent').length },
+  // Recent activity data
+  const recentActivity = [
+    { id: 1, type: "sale", description: "Nueva venta - Cliente Premium", amount: 2500, time: "Hace 5 min" },
+    { id: 2, type: "employee", description: "Nuevo empleado registrado", time: "Hace 15 min" },
+    { id: 3, type: "customer", description: "Cliente actualizado a Elite", time: "Hace 30 min" },
+    { id: 4, type: "store", description: "Nueva tienda en Miami", time: "Hace 1 hora" },
   ];
 
-  // Customer tier distribution
-  const customerTierData = [
-    { type: 'Oro', value: customers.filter(c => c.tier === 'gold').length },
-    { type: 'Plata', value: customers.filter(c => c.tier === 'silver').length },
-    { type: 'Bronce', value: customers.filter(c => c.tier === 'bronze').length },
+  // Top performers data
+  const topPerformers = [
+    { id: 1, name: "María González", role: "Agente Senior", sales: 85, conversions: 68 },
+    { id: 2, name: "Carlos Rodríguez", role: "Agente", sales: 72, conversions: 54 },
+    { id: 3, name: "Ana López", role: "Agente Senior", sales: 69, conversions: 52 },
+    { id: 4, name: "Luis Martínez", role: "Agente", sales: 61, conversions: 45 },
+  ];
+
+  // Sales chart data
+  const salesData = [
+    { month: 'Ene', sales: 45000 },
+    { month: 'Feb', sales: 52000 },
+    { month: 'Mar', sales: 48000 },
+    { month: 'Abr', sales: 61000 },
+    { month: 'May', sales: 55000 },
+    { month: 'Jun', sales: 67000 },
+  ];
+
+  const salesConfig = {
+    data: salesData,
+    xField: 'month',
+    yField: 'sales',
+    color: '#1890ff',
+    columnStyle: {
+      radius: [4, 4, 0, 0],
+    },
+  };
+
+  const activityColumns = [
+    {
+      title: 'Actividad',
+      dataIndex: 'description',
+      key: 'description',
+      render: (text: string, record: any) => (
+        <div>
+          <Text strong>{text}</Text>
+          {record.amount && (
+            <div>
+              <Text type="success">${record.amount.toLocaleString()}</Text>
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: 'Tiempo',
+      dataIndex: 'time',
+      key: 'time',
+      width: 120,
+    },
+  ];
+
+  const performersColumns = [
+    {
+      title: 'Empleado',
+      key: 'employee',
+      render: (record: any) => (
+        <Space>
+          <Avatar icon={<UserOutlined />} />
+          <div>
+            <div style={{ fontWeight: 'bold' }}>{record.name}</div>
+            <Text type="secondary" style={{ fontSize: '12px' }}>{record.role}</Text>
+          </div>
+        </Space>
+      ),
+    },
+    {
+      title: 'Ventas',
+      dataIndex: 'sales',
+      key: 'sales',
+      render: (sales: number) => (
+        <div>
+          <div style={{ fontWeight: 'bold' }}>{sales}</div>
+          <Progress percent={sales} size="small" showInfo={false} />
+        </div>
+      ),
+    },
+    {
+      title: 'Conversiones',
+      dataIndex: 'conversions',
+      key: 'conversions',
+      render: (conversions: number) => (
+        <Tag color="green">{conversions}%</Tag>
+      ),
+    },
   ];
 
   return (
@@ -86,208 +122,132 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
           <Title level={2}>Dashboard Administrativo</Title>
-          <Text type="secondary">Vista completa del sistema</Text>
-        </Col>
-        <Col>
-          <Space>
-            <Button icon={<SettingOutlined />} onClick={() => window.location.href = '/admin/settings'}>
-              Configuración del Sistema
-            </Button>
-            <Button icon={<SafetyOutlined />} onClick={() => window.location.href = '/admin/permissions'}>
-              Gestionar Permisos
-            </Button>
-          </Space>
+          <Text type="secondary">Resumen general del sistema</Text>
         </Col>
       </Row>
 
-      {/* System-wide KPIs */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={4}>
-          <Card>
-            <Statistic
-              title="Ingresos Totales"
-              value={systemStats.totalRevenue}
-              prefix={<DollarOutlined />}
-              suffix="USD"
-              valueStyle={{ color: '#3f8600' }}
-            />
-            <Progress 
-              percent={(systemStats.totalRevenue / systemStats.totalTarget) * 100} 
-              showInfo={false} 
-              strokeColor="#52c41a" 
-            />
-            <Text type="secondary">
-              {((systemStats.totalRevenue / systemStats.totalTarget) * 100).toFixed(0)}% del objetivo
-            </Text>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={4}>
-          <Card>
-            <Statistic
-              title="Total Tiendas"
-              value={stores.length}
-              prefix={<ShopOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-            <Text type="secondary">
-              {stores.filter(s => s.status === 'active').length} activas
-            </Text>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={4}>
-          <Card>
-            <Statistic
-              title="Total Empleados"
-              value={employees.length}
-              prefix={<TeamOutlined />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-            <Text type="secondary">
-              {systemStats.activeEmployees} activos
-            </Text>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={4}>
+      {/* Main Statistics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Total Clientes"
-              value={customers.length}
+              value={totalCustomers}
               prefix={<UserOutlined />}
-              valueStyle={{ color: '#fa8c16' }}
+              valueStyle={{ color: '#1890ff' }}
+              suffix={
+                <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                  <RiseOutlined style={{ color: '#52c41a' }} /> +{monthlyGrowth}%
+                </div>
+              }
             />
-            <Text type="secondary">
-              {systemStats.eliteMembers} miembros elite
-            </Text>
           </Card>
         </Col>
-
-        <Col xs={24} sm={12} lg={4}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Llamadas Hoy"
-              value={systemStats.totalCalls}
-              prefix={<PhoneOutlined />}
-              valueStyle={{ color: '#eb2f96' }}
-            />
-            <Text type="secondary">
-              Promedio por empleado
-            </Text>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={4}>
-          <Card>
-            <Statistic
-              title="Crecimiento"
-              value={15.3}
-              precision={1}
-              prefix={<RiseOutlined />}
-              suffix="%"
+              title="Empleados Activos"
+              value={totalEmployees}
+              prefix={<TeamOutlined />}
               valueStyle={{ color: '#52c41a' }}
             />
-            <Text type="secondary">
-              vs mes anterior
-            </Text>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="Tiendas"
+              value={totalStores}
+              prefix={<ShopOutlined />}
+              valueStyle={{ color: '#faad14' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="Ingresos del Mes"
+              value={totalRevenue}
+              prefix={<DollarOutlined />}
+              suffix="USD"
+              valueStyle={{ color: '#3f8600' }}
+              precision={0}
+            />
           </Card>
         </Col>
       </Row>
 
-      {/* Charts Row */}
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+      {/* Charts and Tables Row */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="Rendimiento por Tienda">
-            <Column
-              data={storePerformanceData}
-              xField="name"
-              yField="sales"
-              seriesField="type"
-              isGroup={true}
-              columnStyle={{
-                radius: [20, 20, 0, 0],
-              }}
-            />
+          <Card title="Ventas por Mes" extra={<TrophyOutlined />}>
+            <Column {...salesConfig} height={300} />
           </Card>
         </Col>
-
         <Col xs={24} lg={12}>
-          <Card title="Distribución de Empleados">
-            <Pie
-              data={employeeDistribution}
-              angleField="value"
-              colorField="type"
-              radius={0.8}
-              label={{
-                type: 'outer',
-                content: '{name} {percentage}',
-              }}
+          <Card title="Top Performers" extra={<CrownOutlined />}>
+            <Table
+              dataSource={topPerformers}
+              columns={performersColumns}
+              pagination={false}
+              size="small"
+              rowKey="id"
             />
           </Card>
         </Col>
       </Row>
 
       {/* Recent Activity */}
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+      <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="Ventas Recientes">
+          <Card title="Actividad Reciente" extra={<PhoneOutlined />}>
             <Table
-              dataSource={sales.slice(0, 5)}
-              columns={[
-                {
-                  title: 'Cliente',
-                  dataIndex: 'customerId',
-                  key: 'customerId',
-                  render: (customerId) => {
-                    const customer = customers.find(c => c.id === customerId);
-                    return customer ? `${customer.firstName} ${customer.lastName}` : customerId;
-                  }
-                },
-                {
-                  title: 'Monto',
-                  dataIndex: 'amount',
-                  key: 'amount',
-                  render: (amount) => `$${amount.toFixed(2)}`
-                },
-                {
-                  title: 'Estado',
-                  dataIndex: 'status',
-                  key: 'status',
-                  render: (status) => (
-                    <Tag color={
-                      status === 'completed' ? 'green' :
-                      status === 'pending' ? 'orange' : 'red'
-                    }>
-                      {status}
-                    </Tag>
-                  )
-                },
-                {
-                  title: 'Fecha',
-                  dataIndex: 'createdAt',
-                  key: 'createdAt',
-                  render: (date) => dayjs(date).format('MM/DD/YYYY')
-                }
-              ]}
+              dataSource={recentActivity}
+              columns={activityColumns}
               pagination={false}
               size="small"
+              rowKey="id"
             />
           </Card>
         </Col>
-
         <Col xs={24} lg={12}>
-          <Card title="Distribución de Clientes por Tier">
-            <Pie
-              data={customerTierData}
-              angleField="value"
-              colorField="type"
-              radius={0.8}
-              label={{
-                type: 'outer',
-                content: '{name} {percentage}',
-              }}
-            />
+          <Card title="Métricas de Rendimiento">
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Statistic
+                  title="Llamadas Hoy"
+                  value={342}
+                  prefix={<PhoneOutlined />}
+                  valueStyle={{ color: '#722ed1' }}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Tasa de Conversión"
+                  value={68.5}
+                  suffix="%"
+                  prefix={<RiseOutlined />}
+                  valueStyle={{ color: '#52c41a' }}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Clientes Elite"
+                  value={89}
+                  prefix={<CrownOutlined />}
+                  valueStyle={{ color: '#faad14' }}
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic
+                  title="Satisfacción"
+                  value={4.7}
+                  suffix="/ 5.0"
+                  prefix={<TrophyOutlined />}
+                  valueStyle={{ color: '#1890ff' }}
+                />
+              </Col>
+            </Row>
           </Card>
         </Col>
       </Row>

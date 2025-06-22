@@ -1,58 +1,13 @@
 import React from "react";
-import { useTable, useDelete, IResourceComponentsProps } from "@refinedev/core";
-import { useModalForm, useSelect } from "@refinedev/antd";
-import { EditButton, DeleteButton, ShowButton, CreateButton } from "@refinedev/antd";
-import { Table, Space, Modal, Form, Input, Select, Tag, Card, Typography, Avatar, Row, Col, Statistic } from "antd";
+import { Table, Space, Tag, Card, Typography, Avatar, Row, Col, Statistic } from "antd";
 import { UserOutlined, PhoneOutlined, MailOutlined, CrownOutlined, StarOutlined } from "@ant-design/icons";
-import { Customer, Employee } from "../../interfaces";
-import dayjs from "dayjs";
+import { Customer } from "../../interfaces";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
-export const CustomerList: React.FC<IResourceComponentsProps> = () => {
-  const { tableProps } = useTable<Customer>({
-    resource: "customers",
-    pagination: {
-      pageSize: 10,
-    },
-    sorters: {
-      initial: [
-        {
-          field: "createdAt",
-          order: "desc",
-        },
-      ],
-    },
-  });
-
-  const { mutate: deleteCustomer } = useDelete();
-
-  const {
-    modalProps: createModalProps,
-    formProps: createFormProps,
-    show: showCreateModal,
-  } = useModalForm<Customer>({
-    resource: "customers",
-    action: "create",
-    redirect: false,
-  });
-
-  const {
-    modalProps: editModalProps,
-    formProps: editFormProps,
-    show: showEditModal,
-  } = useModalForm<Customer>({
-    resource: "customers",
-    action: "edit",
-    redirect: false,
-  });
-
-  const { data: employeesData } = useSelect<Employee>({
-    resource: "employees",
-    optionLabel: "firstName",
-    optionValue: "id",
-  });
+export const CustomerList: React.FC = () => {
+  // Mock data for now - this will be replaced with real API calls later
+  const customers: Customer[] = [];
 
   const columns = [
     {
@@ -106,22 +61,9 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
         };
         return (
           <Tag color={colors[tier as keyof typeof colors]} icon={icons[tier as keyof typeof icons]}>
-            {tier.toUpperCase()}
+            {tier?.toUpperCase()}
           </Tag>
         );
-      },
-    },
-    {
-      title: "Estado",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        const colors = {
-          active: "green",
-          inactive: "red",
-          pending: "orange",
-        };
-        return <Tag color={colors[status as keyof typeof colors]}>{status}</Tag>;
       },
     },
     {
@@ -134,42 +76,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
         </Tag>
       ),
     },
-    {
-      title: "Agente Asignado",
-      dataIndex: "assignedAgentId",
-      key: "assignedAgentId",
-      render: (agentId: string) => {
-        const agent = employeesData?.data?.find((emp: Employee) => emp.id === agentId);
-        return agent ? `${agent.firstName} ${agent.lastName}` : "Sin asignar";
-      },
-    },
-    {
-      title: "Fecha de Registro",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (record: Customer) => (
-        <Space>
-          <ShowButton hideText size="small" recordItemId={record.id} />
-          <EditButton hideText size="small" recordItemId={record.id} />
-          <DeleteButton
-            hideText
-            size="small"
-            recordItemId={record.id}
-            onSuccess={() => {
-              tableProps.onChange?.({ ...tableProps.pagination, current: 1 });
-            }}
-          />
-        </Space>
-      ),
-    },
   ];
-
-  const customers = tableProps.dataSource || [];
 
   return (
     <div style={{ padding: 24 }}>
@@ -177,9 +84,6 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
         <Col>
           <Title level={2}>Clientes</Title>
           <Text type="secondary">Gestión de clientes del sistema</Text>
-        </Col>
-        <Col>
-          <CreateButton onClick={showCreateModal} />
         </Col>
       </Row>
 
@@ -209,7 +113,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
           <Card>
             <Statistic
               title="Clientes Activos"
-              value={customers.filter((c: Customer) => c.status === "active").length}
+              value={0}
               prefix={<UserOutlined />}
               valueStyle={{ color: "#52c41a" }}
             />
@@ -219,7 +123,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
           <Card>
             <Statistic
               title="Sin Agente"
-              value={customers.filter((c: Customer) => !c.assignedAgentId).length}
+              value={0}
               prefix={<UserOutlined />}
               valueStyle={{ color: "#ff4d4f" }}
             />
@@ -228,179 +132,12 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
       </Row>
 
       <Table
-        {...tableProps}
+        dataSource={customers}
         columns={columns}
         rowKey="id"
         scroll={{ x: 1200 }}
+        pagination={{ pageSize: 10 }}
       />
-
-      {/* Create Modal */}
-      <Modal {...createModalProps} title="Crear Cliente" width={600}>
-        <Form {...createFormProps} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Nombre"
-                name="firstName"
-                rules={[{ required: true, message: "Por favor ingrese el nombre" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Apellido"
-                name="lastName"
-                rules={[{ required: true, message: "Por favor ingrese el apellido" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Por favor ingrese el email" },
-                  { type: "email", message: "Email inválido" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Teléfono"
-                name="phone"
-                rules={[{ required: true, message: "Por favor ingrese el teléfono" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Tier" name="tier">
-                <Select>
-                  <Option value="bronze">Bronze</Option>
-                  <Option value="silver">Silver</Option>
-                  <Option value="gold">Gold</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Estado" name="status">
-                <Select>
-                  <Option value="active">Activo</Option>
-                  <Option value="inactive">Inactivo</Option>
-                  <Option value="pending">Pendiente</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item label="Agente Asignado" name="assignedAgentId">
-            <Select allowClear>
-              {employeesData?.data?.map((employee: Employee) => (
-                <Option key={employee.id} value={employee.id}>
-                  {employee.firstName} {employee.lastName}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item name="isEliteMember" valuePropName="checked">
-            <Select>
-              <Option value={true}>Miembro Elite</Option>
-              <Option value={false}>Cliente Regular</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Edit Modal */}
-      <Modal {...editModalProps} title="Editar Cliente" width={600}>
-        <Form {...editFormProps} layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Nombre"
-                name="firstName"
-                rules={[{ required: true, message: "Por favor ingrese el nombre" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Apellido"
-                name="lastName"
-                rules={[{ required: true, message: "Por favor ingrese el apellido" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Por favor ingrese el email" },
-                  { type: "email", message: "Email inválido" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Teléfono"
-                name="phone"
-                rules={[{ required: true, message: "Por favor ingrese el teléfono" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Tier" name="tier">
-                <Select>
-                  <Option value="bronze">Bronze</Option>
-                  <Option value="silver">Silver</Option>
-                  <Option value="gold">Gold</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Estado" name="status">
-                <Select>
-                  <Option value="active">Activo</Option>
-                  <Option value="inactive">Inactivo</Option>
-                  <Option value="pending">Pendiente</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item label="Agente Asignado" name="assignedAgentId">
-            <Select allowClear>
-              {employeesData?.data?.map((employee: Employee) => (
-                <Option key={employee.id} value={employee.id}>
-                  {employee.firstName} {employee.lastName}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item name="isEliteMember" valuePropName="checked">
-            <Select>
-              <Option value={true}>Miembro Elite</Option>
-              <Option value={false}>Cliente Regular</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 }; 

@@ -1,74 +1,13 @@
 import React from "react";
-import { useTable, useDelete, useShow, IResourceComponentsProps, GetOneResponse } from "@refinedev/core";
-import { useModalForm, useSelect } from "@refinedev/antd";
-import { List, EditButton, DeleteButton, ShowButton, CreateButton } from "@refinedev/antd";
-import { Table, Space, Button, Modal, Form, Input, Select, DatePicker, Tag, Card, Typography, Avatar, Row, Col, Statistic, Progress } from "antd";
+import { Table, Space, Tag, Card, Typography, Avatar, Row, Col, Statistic, Progress } from "antd";
 import { ShopOutlined, DollarOutlined, TeamOutlined, TrophyOutlined, RiseOutlined } from "@ant-design/icons";
-import { Store, Employee } from "../../interfaces";
-import dayjs from "dayjs";
+import { Store } from "../../interfaces";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
-export const StoreList: React.FC<IResourceComponentsProps> = () => {
-  const { tableProps, searchFormProps } = useTable<Store>({
-    resource: "stores",
-    onSearch: (values) => {
-      return [
-        {
-          field: "name",
-          operator: "contains",
-          value: values.q,
-        },
-        {
-          field: "location",
-          operator: "contains",
-          value: values.q,
-        },
-      ];
-    },
-    pagination: {
-      pageSize: 10,
-    },
-    sorters: {
-      initial: [
-        {
-          field: "createdAt",
-          order: "desc",
-        },
-      ],
-    },
-  });
-
-  const { mutate: deleteStore } = useDelete();
-
-  const {
-    modalProps: createModalProps,
-    formProps: createFormProps,
-    show: showCreateModal,
-  } = useModalForm<Store>({
-    resource: "stores",
-    action: "create",
-    redirect: false,
-  });
-
-  const {
-    modalProps: editModalProps,
-    formProps: editFormProps,
-    show: showEditModal,
-    queryResult: editQueryResult,
-  } = useModalForm<Store>({
-    resource: "stores",
-    action: "edit",
-    redirect: false,
-  });
-
-  const { data: managersData } = useSelect<Employee>({
-    resource: "employees",
-    filters: [{ field: "role", operator: "eq", value: "manager" }],
-    optionLabel: "firstName",
-    optionValue: "id",
-  });
+export const StoreList: React.FC = () => {
+  // Mock data for now - this will be replaced with real API calls later
+  const stores: Store[] = [];
 
   const columns = [
     {
@@ -96,15 +35,6 @@ export const StoreList: React.FC<IResourceComponentsProps> = () => {
           <Text>{location}</Text>
         </div>
       ),
-    },
-    {
-      title: "Gerente",
-      dataIndex: "managerId",
-      key: "managerId",
-      render: (managerId: string) => {
-        const manager = managersData?.data?.find((m: Employee) => m.id === managerId);
-        return manager ? `${manager.firstName} ${manager.lastName}` : "Sin asignar";
-      },
     },
     {
       title: "Estado",
@@ -164,33 +94,7 @@ export const StoreList: React.FC<IResourceComponentsProps> = () => {
         </div>
       ),
     },
-    {
-      title: "Fecha de Creación",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
-    },
-    {
-      title: "Acciones",
-      key: "actions",
-      render: (record: Store) => (
-        <Space>
-          <ShowButton hideText size="small" recordItemId={record.id} />
-          <EditButton hideText size="small" recordItemId={record.id} />
-          <DeleteButton
-            hideText
-            size="small"
-            recordItemId={record.id}
-            onSuccess={() => {
-              tableProps.onChange?.({ ...tableProps.pagination, current: 1 });
-            }}
-          />
-        </Space>
-      ),
-    },
   ];
-
-  const stores = tableProps.dataSource || [];
 
   return (
     <div style={{ padding: 24 }}>
@@ -198,9 +102,6 @@ export const StoreList: React.FC<IResourceComponentsProps> = () => {
         <Col>
           <Title level={2}>Tiendas</Title>
           <Text type="secondary">Gestión de tiendas del sistema</Text>
-        </Col>
-        <Col>
-          <CreateButton onClick={showCreateModal} />
         </Col>
       </Row>
 
@@ -251,103 +152,12 @@ export const StoreList: React.FC<IResourceComponentsProps> = () => {
       </Row>
 
       <Table
-        {...tableProps}
+        dataSource={stores}
         columns={columns}
         rowKey="id"
         scroll={{ x: 1400 }}
+        pagination={{ pageSize: 10 }}
       />
-
-      {/* Create Modal */}
-      <Modal {...createModalProps} title="Crear Tienda" width={600}>
-        <Form {...createFormProps} layout="vertical">
-          <Form.Item
-            label="Nombre"
-            name="name"
-            rules={[{ required: true, message: "Por favor ingrese el nombre de la tienda" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Ubicación"
-            name="location"
-            rules={[{ required: true, message: "Por favor ingrese la ubicación" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label="Gerente" name="managerId">
-            <Select allowClear>
-              {managersData?.data?.map((manager: Employee) => (
-                <Option key={manager.id} value={manager.id}>
-                  {manager.firstName} {manager.lastName}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Estado"
-            name="status"
-            rules={[{ required: true, message: "Por favor seleccione el estado" }]}
-          >
-            <Select>
-              <Option value="active">Activa</Option>
-              <Option value="inactive">Inactiva</Option>
-              <Option value="maintenance">Mantenimiento</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Objetivo Mensual" name={["performance", "monthlyTarget"]}>
-            <Input type="number" prefix="$" />
-          </Form.Item>
-          <Form.Item label="Descripción" name="description">
-            <Input.TextArea rows={3} />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Edit Modal */}
-      <Modal {...editModalProps} title="Editar Tienda" width={600}>
-        <Form {...editFormProps} layout="vertical">
-          <Form.Item
-            label="Nombre"
-            name="name"
-            rules={[{ required: true, message: "Por favor ingrese el nombre de la tienda" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Ubicación"
-            name="location"
-            rules={[{ required: true, message: "Por favor ingrese la ubicación" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label="Gerente" name="managerId">
-            <Select allowClear>
-              {managersData?.data?.map((manager: Employee) => (
-                <Option key={manager.id} value={manager.id}>
-                  {manager.firstName} {manager.lastName}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Estado"
-            name="status"
-            rules={[{ required: true, message: "Por favor seleccione el estado" }]}
-          >
-            <Select>
-              <Option value="active">Activa</Option>
-              <Option value="inactive">Inactiva</Option>
-              <Option value="maintenance">Mantenimiento</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Objetivo Mensual" name={["performance", "monthlyTarget"]}>
-            <Input type="number" prefix="$" />
-          </Form.Item>
-          <Form.Item label="Descripción" name="description">
-            <Input.TextArea rows={3} />
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 }; 

@@ -16,13 +16,13 @@ import routerBindings, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
-import { UserOutlined, TeamOutlined, ScheduleOutlined, DashboardOutlined } from "@ant-design/icons";
+import { UserOutlined, TeamOutlined, ShopOutlined, DashboardOutlined } from "@ant-design/icons";
 import { authProvider } from "./authProvider";
 import { Login } from "./pages/login";
-import { PatientList, PatientCreate, PatientEdit, PatientShow } from "./pages/patients";
-import { DoctorList, DoctorCreate, DoctorEdit, DoctorShow } from "./pages/doctors";
-import { AppointmentList, AppointmentCreate, AppointmentEdit, AppointmentShow } from "./pages/appointments";
-import { Dashboard } from "./pages/dashboard";
+import { DashboardPage } from "./pages/dashboard";
+import { CustomerList } from "./pages/customers";
+import { EmployeeList } from "./pages/employees";
+import { StoreList } from "./pages/stores";
 
 function App() {
   return (
@@ -51,39 +51,27 @@ function App() {
                   },
                 },
                 {
-                  name: "users",
-                  list: "/users",
-                  create: "/users/create",
-                  edit: "/users/edit/:id",
-                  show: "/users/show/:id",
+                  name: "customers",
+                  list: "/customers",
                   meta: {
-                    label: "Usuarios",
+                    label: "Clientes",
                     icon: <UserOutlined />,
-                    canDelete: true,
                   },
                 },
                 {
-                  name: "sleep-records",
-                  list: "/sleep-records",
-                  create: "/sleep-records/create",
-                  edit: "/sleep-records/edit/:id",
-                  show: "/sleep-records/show/:id",
+                  name: "employees",
+                  list: "/employees",
                   meta: {
-                    label: "Registros de Sueño",
-                    icon: <ScheduleOutlined />,
-                    canDelete: true,
-                  },
-                },
-                {
-                  name: "sleep-goals",
-                  list: "/sleep-goals",
-                  create: "/sleep-goals/create",
-                  edit: "/sleep-goals/edit/:id",
-                  show: "/sleep-goals/show/:id",
-                  meta: {
-                    label: "Metas de Sueño",
+                    label: "Empleados",
                     icon: <TeamOutlined />,
-                    canDelete: true,
+                  },
+                },
+                {
+                  name: "stores",
+                  list: "/stores",
+                  meta: {
+                    label: "Tiendas",
+                    icon: <ShopOutlined />,
                   },
                 },
               ]}
@@ -98,44 +86,17 @@ function App() {
                   element={
                     <Authenticated key="authenticated-routes" fallback={<CatchAllNavigate to="/login" />}>
                       <ThemedLayoutV2
-                        Sider={ThemedSiderV2}
-                        Title={({ collapsed }) => (
-                          <div style={{ 
-                            display: "flex", 
-                            alignItems: "center", 
-                            gap: "8px",
-                            fontSize: collapsed ? "16px" : "20px",
-                            fontWeight: "bold",
-                            color: "#1890ff"
-                          }}>
-                            {!collapsed && "Sleep Plus Admin"}
-                          </div>
-                        )}
+                        Sider={(props) => <ThemedSiderV2 {...props} fixed />}
                       >
                         <Outlet />
                       </ThemedLayoutV2>
                     </Authenticated>
                   }
                 >
-                  <Route index element={<Dashboard />} />
-                  <Route path="/patients">
-                    <Route index element={<PatientList />} />
-                    <Route path="create" element={<PatientCreate />} />
-                    <Route path="edit/:id" element={<PatientEdit />} />
-                    <Route path="show/:id" element={<PatientShow />} />
-                  </Route>
-                  <Route path="/doctors">
-                    <Route index element={<DoctorList />} />
-                    <Route path="create" element={<DoctorCreate />} />
-                    <Route path="edit/:id" element={<DoctorEdit />} />
-                    <Route path="show/:id" element={<DoctorShow />} />
-                  </Route>
-                  <Route path="/appointments">
-                    <Route index element={<AppointmentList />} />
-                    <Route path="create" element={<AppointmentCreate />} />
-                    <Route path="edit/:id" element={<AppointmentEdit />} />
-                    <Route path="show/:id" element={<AppointmentShow />} />
-                  </Route>
+                  <Route index element={<DashboardPage />} />
+                  <Route path="/customers" element={<CustomerList />} />
+                  <Route path="/employees" element={<EmployeeList />} />
+                  <Route path="/stores" element={<StoreList />} />
                   <Route path="*" element={<ErrorComponent />} />
                 </Route>
                 <Route
