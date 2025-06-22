@@ -2,7 +2,7 @@
 // Configuración DEFINITIVA de la API
 
 // URL del backend - HARDCODED para evitar problemas con variables de entorno
-export const BACKEND_URL = 'https://sleep-plus-v2-backend.dqyvuv.easypanel.host';
+export const BACKEND_URL = 'https://sleep-plus-front-2-backend.dqyvuv.easypanel.host';
 
 // Para desarrollo local
 export const LOCAL_URL = 'http://localhost:3001';
