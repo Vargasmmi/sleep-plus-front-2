@@ -2,24 +2,12 @@ import { DataProvider } from "@refinedev/core";
 import axios from "axios";
 import { activityLogService } from "../services/activityLogService";
 import { ACTIVITY_RESOURCES } from "../interfaces/activityLog";
+import { API_URL } from "../config/env";
 
-// Función para obtener la URL base de la API
-const getApiUrl = () => {
-  // Si estamos en producción, usar la URL del backend de EasyPanel
-  if (import.meta.env.PROD) {
-    return import.meta.env.VITE_API_URL || "https://sleep-plus-front-2-backend.dqyvuv.easypanel.host";
-  }
-  
-  // En desarrollo, usar la variable de entorno o fallback
-  return import.meta.env.VITE_API_URL || "http://127.0.0.1:3001";
-};
-
-// Use environment variable or fallback
-const API_URL = getApiUrl();
 // No agregamos /api porque json-server no lo usa
 const FULL_API_URL = API_URL;
 
-console.log('🔧 API URL configured as:', FULL_API_URL);
+console.log('🔧 Data Provider API URL:', FULL_API_URL);
 
 // Create axios instance
 const axiosInstance = axios.create({
