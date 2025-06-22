@@ -16,7 +16,8 @@ const getApiUrl = () => {
 
 // Use environment variable or fallback
 const API_URL = getApiUrl();
-const FULL_API_URL = `${API_URL}/api`;
+// No agregamos /api porque json-server no lo usa
+const FULL_API_URL = API_URL;
 
 console.log('🔧 API URL configured as:', FULL_API_URL);
 
